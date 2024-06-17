@@ -6,6 +6,7 @@ import 'package:chewie/src/models/options_translation.dart';
 import 'package:chewie/src/models/subtitle_model.dart';
 import 'package:chewie/src/notifiers/player_notifier.dart';
 import 'package:chewie/src/player_with_controls.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -25,9 +26,9 @@ typedef ChewieRoutePageBuilder = Widget Function(
 /// make it easy to use!
 class Chewie extends StatefulWidget {
   const Chewie({
-    Key? key,
+    super.key,
     required this.controller,
-  }) : super(key: key);
+  });
 
   /// The [ChewieController]
   final ChewieController controller;
@@ -54,6 +55,7 @@ class ChewieState extends State<Chewie> {
   @override
   void dispose() {
     widget.controller.removeListener(listener);
+    notifier.dispose();
     super.dispose();
   }
 
@@ -165,12 +167,17 @@ class ChewieState extends State<Chewie> {
       context,
       rootNavigator: widget.controller.useRootNavigator,
     ).push(route);
+
+    if (kIsWeb) {
+      _reInitializeControllers();
+    }
+
     _isFullScreen = false;
     widget.controller.exitFullScreen();
 
-    // The wakelock plugins checks whether it needs to perform an action internally,
-    // so we do not need to check WakelockPlus.isEnabled.
-    WakelockPlus.disable();
+    if (!widget.controller.allowedScreenSleep) {
+      WakelockPlus.disable();
+    }
 
     SystemChrome.setEnabledSystemUIMode(
       SystemUiMode.manual,
@@ -230,6 +237,18 @@ class ChewieState extends State<Chewie> {
         SystemChrome.setPreferredOrientations(DeviceOrientation.values);
       }
     }
+  }
+
+  ///When viewing full screen on web, returning from full screen causes original video to lose the picture.
+  ///We re initialise controllers for web only when returning from full screen
+  void _reInitializeControllers() {
+    final prevPosition = widget.controller.videoPlayerController.value.position;
+    widget.controller.videoPlayerController.initialize().then((_) async {
+      widget.controller._initialize();
+      widget.controller.videoPlayerController.seekTo(prevPosition);
+      await widget.controller.videoPlayerController.play();
+      widget.controller.videoPlayerController.pause();
+    });
   }
 }
 
@@ -628,10 +647,10 @@ class ChewieController extends ChangeNotifier {
 
 class ChewieControllerProvider extends InheritedWidget {
   const ChewieControllerProvider({
-    Key? key,
+    super.key,
     required this.controller,
-    required Widget child,
-  }) : super(key: key, child: child);
+    required super.child,
+  });
 
   final ChewieController controller;
 

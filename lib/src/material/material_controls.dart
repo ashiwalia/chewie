@@ -263,6 +263,7 @@ class _MaterialControlsState extends State<MaterialControls>
           bottom: !chewieController.isFullScreen ? 10.0 : 0,
         ),
         child: SafeArea(
+          top: false,
           bottom: chewieController.isFullScreen,
           minimum: chewieController.controlsSafeAreaMinimum,
           child: Column(

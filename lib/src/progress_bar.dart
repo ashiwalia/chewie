@@ -9,12 +9,11 @@ class VideoProgressBar extends StatefulWidget {
     this.onDragEnd,
     this.onDragStart,
     this.onDragUpdate,
-    Key? key,
+    super.key,
     required this.barHeight,
     required this.handleHeight,
     required this.drawShadow,
-  })  : colors = colors ?? ChewieProgressColors(),
-        super(key: key);
+  }) : colors = colors ?? ChewieProgressColors();
 
   final VideoPlayerController controller;
   final ChewieProgressColors colors;
@@ -74,6 +73,7 @@ class _VideoProgressBarState extends State<VideoProgressBar> {
         barHeight: widget.barHeight,
         handleHeight: widget.handleHeight,
         drawShadow: widget.drawShadow,
+        latestDraggableOffset: _latestDraggableOffset,
       ),
     );
 
@@ -125,14 +125,14 @@ class _VideoProgressBarState extends State<VideoProgressBar> {
 
 class StaticProgressBar extends StatelessWidget {
   const StaticProgressBar({
-    Key? key,
+    super.key,
     required this.value,
     required this.colors,
     required this.barHeight,
     required this.handleHeight,
     required this.drawShadow,
     this.latestDraggableOffset,
-  }) : super(key: key);
+  });
 
   final Offset? latestDraggableOffset;
   final VideoPlayerValue value;
@@ -151,10 +151,12 @@ class StaticProgressBar extends StatelessWidget {
       child: CustomPaint(
         painter: _ProgressBarPainter(
           value: value,
-          draggableValue: context.calcRelativePosition(
-            value.duration,
-            latestDraggableOffset,
-          ),
+          draggableValue: latestDraggableOffset != null
+              ? context.calcRelativePosition(
+                  value.duration,
+                  latestDraggableOffset!,
+                )
+              : null,
           colors: colors,
           barHeight: barHeight,
           handleHeight: handleHeight,
@@ -181,7 +183,10 @@ class _ProgressBarPainter extends CustomPainter {
   final double barHeight;
   final double handleHeight;
   final bool drawShadow;
-  final Duration draggableValue;
+
+  /// The value of the draggable progress bar.
+  /// If null, the progress bar is not being dragged.
+  final Duration? draggableValue;
 
   @override
   bool shouldRepaint(CustomPainter painter) {
@@ -205,8 +210,8 @@ class _ProgressBarPainter extends CustomPainter {
     if (!value.isInitialized) {
       return;
     }
-    final double playedPartPercent = (draggableValue != Duration.zero
-            ? draggableValue.inMilliseconds
+    final double playedPartPercent = (draggableValue != null
+            ? draggableValue!.inMilliseconds
             : value.position.inMilliseconds) /
         value.duration.inMilliseconds;
     final double playedPart =
@@ -259,12 +264,11 @@ class _ProgressBarPainter extends CustomPainter {
 extension RelativePositionExtensions on BuildContext {
   Duration calcRelativePosition(
     Duration videoDuration,
-    Offset? globalPosition,
+    Offset globalPosition,
   ) {
-    if (globalPosition == null) return Duration.zero;
     final box = findRenderObject()! as RenderBox;
     final Offset tapPos = box.globalToLocal(globalPosition);
-    final double relative = tapPos.dx / box.size.width;
+    final double relative = (tapPos.dx / box.size.width).clamp(0, 1);
     final Duration position = videoDuration * relative;
     return position;
   }
