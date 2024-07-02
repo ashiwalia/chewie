@@ -37,9 +37,13 @@ class _OptionsDialogState extends State<OptionsDialog> {
               );
             },
             separatorBuilder: (context, i) {
-              return const Divider(
-                thickness: 1.0,
-                color: Colors.white54,
+              return const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                child: Divider(
+                  thickness: 1.0,
+                  height: 0,
+                  color: Colors.white54,
+                ),
               );
             },
           ),
