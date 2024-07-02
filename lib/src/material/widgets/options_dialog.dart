@@ -29,10 +29,10 @@ class _OptionsDialogState extends State<OptionsDialog> {
             itemBuilder: (context, i) {
               return ListTile(
                 onTap: widget.options[i].onTap,
-                leading: Icon(widget.options[i].iconData),
-                title: Text(widget.options[i].title),
+                leading: Icon(widget.options[i].iconData, color: Colors.white),
+                title: Text(widget.options[i].title, style: const TextStyle(color: Colors.white)),
                 subtitle: widget.options[i].subtitle != null
-                    ? Text(widget.options[i].subtitle!)
+                    ? Text(widget.options[i].subtitle!, style: const TextStyle(color: Colors.white))
                     : null,
               );
             },
@@ -41,6 +41,7 @@ class _OptionsDialogState extends State<OptionsDialog> {
             padding: EdgeInsets.symmetric(horizontal: 16),
             child: Divider(
               thickness: 1.0,
+              color: Colors.white,
             ),
           ),
           ListTile(
@@ -48,6 +49,7 @@ class _OptionsDialogState extends State<OptionsDialog> {
             leading: const Icon(Icons.close),
             title: Text(
               widget.cancelButtonText ?? 'Cancel',
+              style: const TextStyle(color: Colors.white),
             ),
           ),
         ],
