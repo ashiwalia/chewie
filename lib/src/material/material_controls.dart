@@ -192,7 +192,7 @@ class _MaterialControlsState extends State<MaterialControls>
             await showModalBottomSheet<OptionItem>(
               context: context,
               isScrollControlled: true,
-              backgroundColor: Colors.black,
+              backgroundColor: Colors.black.withOpacity(0.8),
               useRootNavigator: chewieController.useRootNavigator,
               builder: (context) => OptionsDialog(
                 options: options,

@@ -23,7 +23,7 @@ class _OptionsDialogState extends State<OptionsDialog> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          ListView.builder(
+          ListView.separated(
             shrinkWrap: true,
             itemCount: widget.options.length,
             itemBuilder: (context, i) {
@@ -36,17 +36,23 @@ class _OptionsDialogState extends State<OptionsDialog> {
                     : null,
               );
             },
+            separatorBuilder: (context, i) {
+              return const Divider(
+                thickness: 1.0,
+                color: Colors.white54,
+              );
+            },
           ),
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 16),
             child: Divider(
               thickness: 1.0,
-              color: Colors.white,
+              color: Colors.white54,
             ),
           ),
           ListTile(
             onTap: () => Navigator.pop(context),
-            leading: const Icon(Icons.close),
+            leading: const Icon(Icons.close, color: Colors.white),
             title: Text(
               widget.cancelButtonText ?? 'Cancel',
               style: const TextStyle(color: Colors.white),
