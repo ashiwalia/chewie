@@ -192,12 +192,29 @@ class _MaterialControlsState extends State<MaterialControls>
             await showModalBottomSheet<OptionItem>(
               context: context,
               isScrollControlled: true,
-              backgroundColor: Colors.blueGrey.shade900,
               useRootNavigator: chewieController.useRootNavigator,
-              builder: (context) => OptionsDialog(
-                options: options,
-                cancelButtonText:
-                    chewieController.optionsTranslation?.cancelButtonText,
+              builder: (context) => Container(
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFF303030), Color(0xFF202020)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.5),
+                      spreadRadius: 2,
+                      blurRadius: 10,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: OptionsDialog(
+                  options: options,
+                  cancelButtonText:
+                      chewieController.optionsTranslation?.cancelButtonText,
+                ),
               ),
             );
           }
