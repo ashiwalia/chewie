@@ -3,19 +3,27 @@ import 'dart:math' as math;
 import 'dart:ui' as ui;
 
 import 'package:chewie/src/animated_play_pause.dart';
+import 'package:chewie/src/center_play_button.dart';
 import 'package:chewie/src/chewie_player.dart';
 import 'package:chewie/src/chewie_progress_colors.dart';
 import 'package:chewie/src/cupertino/cupertino_progress_bar.dart';
 import 'package:chewie/src/cupertino/widgets/cupertino_options_dialog.dart';
 import 'package:chewie/src/helpers/utils.dart';
-import 'package:chewie/src/hit_area_controls.dart';
 import 'package:chewie/src/models/option_item.dart';
 import 'package:chewie/src/models/subtitle_model.dart';
 import 'package:chewie/src/notifiers/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
+
+const String KEY_UP = 'Arrow Up';
+const String KEY_DOWN = 'Arrow Down';
+const String KEY_LEFT = 'Arrow Left';
+const String KEY_RIGHT = 'Arrow Right';
+const String KEY_CENTER = 'Select';
+const String KEY_CENTER_KEYBOARD = 'Select';
 
 class CupertinoControls extends StatefulWidget {
   const CupertinoControls({
@@ -346,30 +354,58 @@ class _CupertinoControlsState extends State<CupertinoControls>
       ),
     );
   }
+  final focusNode = FocusNode();
 
   Widget _buildHitArea() {
+    Future.delayed(const Duration(milliseconds: 500), () {
+      if (!focusNode.hasFocus) {
+        focusNode.requestFocus();
+      }
+    });
+
     final bool isFinished = _latestValue.position >= _latestValue.duration;
     final bool showPlayButton =
         widget.showPlayButton && !_latestValue.isPlaying && !_dragging;
 
-    return HitAreaControls(
-      onTapPlay: _latestValue.isPlaying
-          ? _cancelAndRestartTimer
-          : () {
-              _hideTimer?.cancel();
+    return GestureDetector(
+        onTap: _latestValue.isPlaying
+            ? _cancelAndRestartTimer
+            : () {
+                _hideTimer?.cancel();
 
-              setState(() {
-                notifier.hideStuff = false;
-              });
-            },
-      backgroundColor: widget.backgroundColor,
-      iconColor: widget.iconColor,
-      isFinished: isFinished,
-      isPlaying: controller.value.isPlaying,
-      showPlayButton: showPlayButton,
-      showSeekButton: false,
-      onPressedPlay: _playPause,
-    );
+                setState(() {
+                  notifier.hideStuff = false;
+                });
+              },
+        child: RawKeyboardListener(
+          focusNode: focusNode,
+          onKey: (RawKeyEvent event) async {
+            if (event is RawKeyDownEvent) {
+              _cancelAndRestartTimer();
+              RawKeyDownEvent rawKeyDownEvent = event;
+              debugPrint("OK =====> ${event.logicalKey.keyLabel}");
+              if (event.logicalKey.keyLabel == KEY_CENTER) {
+                _playPause();
+              }
+              if (event.logicalKey.keyLabel == KEY_RIGHT) {
+                Duration? p = await controller.position;
+                controller.seekTo(Duration(milliseconds: p!.inMilliseconds + (10 * 1000)));
+              }
+              if (event.logicalKey.keyLabel == KEY_LEFT) {
+                Duration? p = await controller.position;
+                controller.seekTo(Duration(milliseconds: p!.inMilliseconds - (10 * 1000)));
+              }
+            }
+          },
+          child: CenterPlayButton(
+            backgroundColor: widget.backgroundColor,
+            iconColor: widget.iconColor,
+            isFinished: isFinished,
+            isPlaying: controller.value.isPlaying,
+            show: showPlayButton,
+            onPressed: _playPause,
+          ),
+        ));
   }
 
   GestureDetector _buildMuteButton(

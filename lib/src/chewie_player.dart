@@ -272,6 +272,7 @@ class ChewieController extends ChangeNotifier {
     this.draggableProgressBar = true,
     this.startAt,
     this.looping = false,
+    this.isTv = false,
     this.fullScreenByDefault = false,
     this.cupertinoProgressColors,
     this.materialProgressColors,
@@ -526,6 +527,9 @@ class ChewieController extends ChangeNotifier {
 
   /// Defines if push/pop navigations use the rootNavigator
   final bool useRootNavigator;
+
+  /// Defines the underlying OS is a TV
+  final bool isTv;
 
   /// Defines the [Duration] before the video controls are hidden. By default, this is set to three seconds.
   final Duration hideControlsTimer;
