@@ -29,7 +29,6 @@ const String KEY_RIGHT = 'Arrow Right';
 const String KEY_CENTER = 'Select';
 const String KEY_CENTER_KEYBOARD = 'Select';
 
-
 class CupertinoControls extends StatefulWidget {
   const CupertinoControls({
     required this.backgroundColor,
@@ -196,7 +195,7 @@ class _CupertinoControlsState extends State<CupertinoControls>
               options: options,
               cancelButtonText:
                   chewieController.optionsTranslation?.cancelButtonText,
-                  keyEvent: askFocus2,
+              keyEvent: askFocus2,
             ),
           );
           if (_videoPlayerValue.isPlaying) {
@@ -388,14 +387,24 @@ class _CupertinoControlsState extends State<CupertinoControls>
       ),
     ));
   }
-ValueNotifier<KeyEvent?> askFocus2 = ValueNotifier<KeyEvent?>(null);
+
+  ValueNotifier<KeyEvent?> askFocus2 = ValueNotifier<KeyEvent?>(null);
+
+  Future<void> seekForward() async {
+    Duration? p = await controller.position;
+    controller.seekTo(Duration(milliseconds: p!.inMilliseconds + (10 * 1000)));
+  }
+
+  Future<void> seekBackward() async {
+    Duration? p = await controller.position;
+    controller.seekTo(Duration(milliseconds: p!.inMilliseconds - (10 * 1000)));
+  }
 
   KeyEventResult _handleKeyEvent(
       KeyEvent event, int focusIndex, FocusNode node) {
     if (event is! KeyDownEvent) {
       return KeyEventResult.ignored;
     }
-
 
     //pass key event to options dialog
     if (notifier.optionsDialogIsShowing) {
@@ -409,7 +418,7 @@ ValueNotifier<KeyEvent?> askFocus2 = ValueNotifier<KeyEvent?>(null);
       //     }
       //   }
       // }
-    print("KKK 1 = > ${focusIndex}");
+      print("KKK 1 = > ${focusIndex}");
 
       askFocus2.value = event;
 
@@ -417,24 +426,33 @@ ValueNotifier<KeyEvent?> askFocus2 = ValueNotifier<KeyEvent?>(null);
       return KeyEventResult.handled;
     }
 
-    _cancelAndRestartTimer();
-
     if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
-      notifier.naviagte(NaviationType.FORWARD);
+      //if controls are hidden then seek the player, otherwise navigate the focus
+      if (notifier.hideStuff) {
+        seekForward();
+      } else {
+        notifier.naviagte(NaviationType.FORWARD);
+      }
       return KeyEventResult.handled;
     }
 
     if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+      _cancelAndRestartTimer();
       notifier.naviagte(NaviationType.BACKWARD);
       return KeyEventResult.handled;
     }
 
     if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
-      notifier.naviagte(NaviationType.BACKWARD);
+      if (notifier.hideStuff) {
+        seekBackward();
+      } else {
+        notifier.naviagte(NaviationType.BACKWARD);
+      }
       return KeyEventResult.handled;
     }
 
     if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+      _cancelAndRestartTimer();
       notifier.naviagte(NaviationType.FORWARD);
       return KeyEventResult.handled;
     }
@@ -727,21 +745,21 @@ ValueNotifier<KeyEvent?> askFocus2 = ValueNotifier<KeyEvent?>(null);
       child: Row(
         children: <Widget>[
           if (chewieController.allowFullScreen)
-          //   _buildExpandButton(
-          //     backgroundColor,
-          //     iconColor,
-          //     barHeight,
-          //     buttonPadding,
-          //   ),
-          // const Spacer(),
-          if (chewieController.allowMuting)
-            _buildMuteButton(
-              controller,
-              backgroundColor,
-              iconColor,
-              barHeight,
-              buttonPadding,
-            ),
+            //   _buildExpandButton(
+            //     backgroundColor,
+            //     iconColor,
+            //     barHeight,
+            //     buttonPadding,
+            //   ),
+            // const Spacer(),
+            if (chewieController.allowMuting)
+              _buildMuteButton(
+                controller,
+                backgroundColor,
+                iconColor,
+                barHeight,
+                buttonPadding,
+              ),
         ],
       ),
     );
