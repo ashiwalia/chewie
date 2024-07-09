@@ -727,13 +727,13 @@ ValueNotifier<KeyEvent?> askFocus2 = ValueNotifier<KeyEvent?>(null);
       child: Row(
         children: <Widget>[
           if (chewieController.allowFullScreen)
-            _buildExpandButton(
-              backgroundColor,
-              iconColor,
-              barHeight,
-              buttonPadding,
-            ),
-          const Spacer(),
+          //   _buildExpandButton(
+          //     backgroundColor,
+          //     iconColor,
+          //     barHeight,
+          //     buttonPadding,
+          //   ),
+          // const Spacer(),
           if (chewieController.allowMuting)
             _buildMuteButton(
               controller,

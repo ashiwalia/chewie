@@ -38,22 +38,20 @@ class PlayerNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
-  int maxFocusIndex = 8;
+  int maxFocusIndex = 7;
 
   int getNextFocusIndex(NaviationType type) {
-    if (focusedButtonIndex == -1) {
-      return 0;
-    }
-
-    if(focusedButtonIndex == maxFocusIndex){
-      return 0;
-    }
-
     if (type == NaviationType.FORWARD) {
+      if (focusedButtonIndex == maxFocusIndex) {
+        return 1;
+      }
       if (focusedButtonIndex < maxFocusIndex) {
         return focusedButtonIndex + 1;
       }
-    }else{
+    } else {
+      if (focusedButtonIndex == -1) {
+        return maxFocusIndex;
+      }
       return focusedButtonIndex - 1;
     }
 
@@ -64,7 +62,6 @@ class PlayerNotifier extends ChangeNotifier {
     focusedButtonIndex = getNextFocusIndex(type);
     notifyListeners();
   }
-
 
   bool optionsDialogIsShowing = false;
   bool shouldOptionDialogRequestFocus = false;
