@@ -5,6 +5,10 @@ import 'package:flutter/material.dart';
 /// Has to be an instance of Singleton to survive
 /// over all State-Changes inside chewie
 ///
+///
+
+enum NaviationType { FORWARD, BACKWARD }
+
 class PlayerNotifier extends ChangeNotifier {
   PlayerNotifier._(
     bool hideStuff,
@@ -24,5 +28,54 @@ class PlayerNotifier extends ChangeNotifier {
     return PlayerNotifier._(
       true,
     );
+  }
+
+  int focusedButtonIndex = -1;
+
+  void setFocusedButtonIndex(int index) {
+    print("OKAY => SETTING INDEX == $index");
+    focusedButtonIndex = index;
+    notifyListeners();
+  }
+
+  int maxFocusIndex = 8;
+
+  int getNextFocusIndex(NaviationType type) {
+    if (focusedButtonIndex == -1) {
+      return 0;
+    }
+
+    if(focusedButtonIndex == maxFocusIndex){
+      return 0;
+    }
+
+    if (type == NaviationType.FORWARD) {
+      if (focusedButtonIndex < maxFocusIndex) {
+        return focusedButtonIndex + 1;
+      }
+    }else{
+      return focusedButtonIndex - 1;
+    }
+
+    return focusedButtonIndex;
+  }
+
+  void naviagte(NaviationType type) {
+    focusedButtonIndex = getNextFocusIndex(type);
+    notifyListeners();
+  }
+
+
+  bool optionsDialogIsShowing = false;
+  bool shouldOptionDialogRequestFocus = false;
+
+  void setOptionsDialogIsShowing(bool value) {
+    optionsDialogIsShowing = value;
+    notifyListeners();
+  }
+
+  void setShouldOptionDialogRequestFocus(bool value) {
+    shouldOptionDialogRequestFocus = value;
+    notifyListeners();
   }
 }

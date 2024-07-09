@@ -21,10 +21,9 @@ class CenterPlayButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ColoredBox(
-      color: Colors.transparent,
-      child: Center(
-        child: UnconstrainedBox(
+    return SizedBox(
+          width: 64,
+          height: 64,
           child: AnimatedOpacity(
             opacity: show ? 1.0 : 0.0,
             duration: const Duration(milliseconds: 300),
@@ -48,8 +47,6 @@ class CenterPlayButton extends StatelessWidget {
               ),
             ),
           ),
-        ),
-      ),
-    );
+        );
   }
 }

@@ -18,12 +18,17 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 
+import 'dpad_helper_widget.dart';
+import 'my_focusable_item.dart';
+import 'widgets/controls_holder.dart';
+
 const String KEY_UP = 'Arrow Up';
 const String KEY_DOWN = 'Arrow Down';
 const String KEY_LEFT = 'Arrow Left';
 const String KEY_RIGHT = 'Arrow Right';
 const String KEY_CENTER = 'Select';
 const String KEY_CENTER_KEYBOARD = 'Select';
+
 
 class CupertinoControls extends StatefulWidget {
   const CupertinoControls({
@@ -48,7 +53,7 @@ class CupertinoControls extends StatefulWidget {
 class _CupertinoControlsState extends State<CupertinoControls>
     with SingleTickerProviderStateMixin {
   late PlayerNotifier notifier;
-  late VideoPlayerValue _latestValue;
+  late VideoPlayerValue _videoPlayerValue;
   double? _latestVolume;
   Timer? _hideTimer;
   final marginSize = 5.0;
@@ -74,7 +79,7 @@ class _CupertinoControlsState extends State<CupertinoControls>
 
   @override
   Widget build(BuildContext context) {
-    if (_latestValue.hasError) {
+    if (_videoPlayerValue.hasError) {
       return chewieController.errorBuilder != null
           ? chewieController.errorBuilder!(
               context,
@@ -95,44 +100,42 @@ class _CupertinoControlsState extends State<CupertinoControls>
     final barHeight = orientation == Orientation.portrait ? 30.0 : 47.0;
     final buttonPadding = orientation == Orientation.portrait ? 16.0 : 24.0;
 
-    return MouseRegion(
-      onHover: (_) => _cancelAndRestartTimer(),
-      child: GestureDetector(
-        onTap: () => _cancelAndRestartTimer(),
-        child: AbsorbPointer(
-          absorbing: notifier.hideStuff,
-          child: Stack(
-            children: [
-              if (_displayBufferingIndicator)
-                const Center(
-                  child: CircularProgressIndicator(),
-                )
-              else
-                _buildHitArea(),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  _buildTopBar(
-                    backgroundColor,
-                    iconColor,
-                    barHeight,
-                    buttonPadding,
-                  ),
-                  const Spacer(),
-                  if (_subtitleOn)
-                    Transform.translate(
-                      offset: Offset(
-                        0.0,
-                        notifier.hideStuff ? barHeight * 0.8 : 0.0,
-                      ),
-                      child: _buildSubtitles(chewieController.subtitle!),
-                    ),
-                  _buildBottomBar(backgroundColor, iconColor, barHeight),
-                ],
+    return MyFocusableItem(
+      focusIndex: -1,
+      onKeyHandler: (FocusNode node, KeyEvent event) {
+        print("OKAY => CupertinoControls onKeyHandler");
+        return _handleKeyEvent(event, notifier.focusedButtonIndex, node);
+      },
+      child: Stack(
+        children: [
+          if (_displayBufferingIndicator)
+            const Center(
+              child: CircularProgressIndicator(),
+            )
+          else
+            _buildHitArea(),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              _buildTopBar(
+                backgroundColor,
+                iconColor,
+                barHeight,
+                buttonPadding,
               ),
+              const Spacer(),
+              if (_subtitleOn)
+                Transform.translate(
+                  offset: Offset(
+                    0.0,
+                    notifier.hideStuff ? barHeight * 0.8 : 0.0,
+                  ),
+                  child: _buildSubtitles(chewieController.subtitle!),
+                ),
+              _buildBottomBar(backgroundColor, iconColor, barHeight),
             ],
           ),
-        ),
+        ],
       ),
     );
   }
@@ -164,7 +167,7 @@ class _CupertinoControlsState extends State<CupertinoControls>
     super.didChangeDependencies();
   }
 
-  GestureDetector _buildOptionsButton(
+  Widget _buildOptionsButton(
     Color iconColor,
     double barHeight,
   ) {
@@ -175,9 +178,12 @@ class _CupertinoControlsState extends State<CupertinoControls>
       options.addAll(chewieController.additionalOptions!(context));
     }
 
-    return GestureDetector(
-      onTap: () async {
+    return DPadeHelperWidget(
+      onPressed: () async {
+        notifier.hideStuff = true;
         _hideTimer?.cancel();
+        controller.pause();
+        notifier.setOptionsDialogIsShowing(true);
 
         if (chewieController.optionsBuilder != null) {
           await chewieController.optionsBuilder!(context, options);
@@ -190,13 +196,16 @@ class _CupertinoControlsState extends State<CupertinoControls>
               options: options,
               cancelButtonText:
                   chewieController.optionsTranslation?.cancelButtonText,
+                  keyEvent: askFocus2,
             ),
           );
-          if (_latestValue.isPlaying) {
+          if (_videoPlayerValue.isPlaying) {
             _startHideTimer();
           }
         }
+        notifier.setOptionsDialogIsShowing(false);
       },
+      focusIndex: 7,
       child: Container(
         height: barHeight,
         color: Colors.transparent,
@@ -291,8 +300,8 @@ class _CupertinoControlsState extends State<CupertinoControls>
                           _buildProgressBar(),
                           _buildRemaining(iconColor),
                           _buildSubtitleToggle(iconColor, barHeight),
-                          if (chewieController.allowPlaybackSpeedChanging)
-                            _buildSpeedButton(controller, iconColor, barHeight),
+                          // if (chewieController.allowPlaybackSpeedChanging)
+                          //   _buildSpeedButton(controller, iconColor, barHeight),
                           if (chewieController.additionalOptions != null &&
                               chewieController
                                   .additionalOptions!(context).isNotEmpty)
@@ -325,27 +334,31 @@ class _CupertinoControlsState extends State<CupertinoControls>
   ) {
     return GestureDetector(
       onTap: _onExpandCollapse,
-      child: AnimatedOpacity(
-        opacity: notifier.hideStuff ? 0.0 : 1.0,
-        duration: const Duration(milliseconds: 300),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(10.0),
-          child: BackdropFilter(
-            filter: ui.ImageFilter.blur(sigmaX: 10.0),
-            child: Container(
-              height: barHeight,
-              padding: EdgeInsets.only(
-                left: buttonPadding,
-                right: buttonPadding,
-              ),
-              color: backgroundColor,
-              child: Center(
-                child: Icon(
-                  chewieController.isFullScreen
-                      ? CupertinoIcons.arrow_down_right_arrow_up_left
-                      : CupertinoIcons.arrow_up_left_arrow_down_right,
-                  color: iconColor,
-                  size: 16,
+      child: DPadeHelperWidget(
+        focusIndex: 0,
+        onPressed: _onExpandCollapse,
+        child: AnimatedOpacity(
+          opacity: notifier.hideStuff ? 0.0 : 1.0,
+          duration: const Duration(milliseconds: 300),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(10.0),
+            child: BackdropFilter(
+              filter: ui.ImageFilter.blur(sigmaX: 10.0),
+              child: Container(
+                height: barHeight,
+                padding: EdgeInsets.only(
+                  left: buttonPadding,
+                  right: buttonPadding,
+                ),
+                color: backgroundColor,
+                child: Center(
+                  child: Icon(
+                    chewieController.isFullScreen
+                        ? CupertinoIcons.arrow_down_right_arrow_up_left
+                        : CupertinoIcons.arrow_up_left_arrow_down_right,
+                    color: iconColor,
+                    size: 16,
+                  ),
                 ),
               ),
             ),
@@ -354,72 +367,125 @@ class _CupertinoControlsState extends State<CupertinoControls>
       ),
     );
   }
-  final focusNode = FocusNode();
 
   Widget _buildHitArea() {
-    Future.delayed(const Duration(milliseconds: 500), () {
-      if (!focusNode.hasFocus) {
-        focusNode.requestFocus();
-      }
-    });
-
-    final bool isFinished = _latestValue.position >= _latestValue.duration;
+    final bool isFinished =
+        _videoPlayerValue.position >= _videoPlayerValue.duration;
     final bool showPlayButton =
-        widget.showPlayButton && !_latestValue.isPlaying && !_dragging;
+        widget.showPlayButton && !_dragging && !notifier.hideStuff;
 
-    return GestureDetector(
-        onTap: _latestValue.isPlaying
-            ? _cancelAndRestartTimer
-            : () {
-                _hideTimer?.cancel();
+    return Center(
+        child: DPadeHelperWidget(
+      focusIndex: 2,
+      onPressed: _playPause,
+      child: CenterPlayButton(
+        backgroundColor: widget.backgroundColor,
+        iconColor: widget.iconColor,
+        isFinished: isFinished,
+        isPlaying: controller.value.isPlaying,
+        show: showPlayButton,
+        onPressed: _playPause,
+      ),
+    ));
+  }
+ValueNotifier<KeyEvent?> askFocus2 = ValueNotifier<KeyEvent?>(null);
 
-                setState(() {
-                  notifier.hideStuff = false;
-                });
-              },
-        child: RawKeyboardListener(
-          focusNode: focusNode,
-          onKey: (RawKeyEvent event) async {
-            if (event is RawKeyDownEvent) {
-              _cancelAndRestartTimer();
-              RawKeyDownEvent rawKeyDownEvent = event;
-              debugPrint("OK =====> ${event.logicalKey.keyLabel}");
-              if (event.logicalKey.keyLabel == KEY_CENTER) {
-                _playPause();
-              }
-              if (event.logicalKey.keyLabel == KEY_RIGHT) {
-                Duration? p = await controller.position;
-                controller.seekTo(Duration(milliseconds: p!.inMilliseconds + (10 * 1000)));
-              }
-              if (event.logicalKey.keyLabel == KEY_LEFT) {
-                Duration? p = await controller.position;
-                controller.seekTo(Duration(milliseconds: p!.inMilliseconds - (10 * 1000)));
-              }
-            }
-          },
-          child: CenterPlayButton(
-            backgroundColor: widget.backgroundColor,
-            iconColor: widget.iconColor,
-            isFinished: isFinished,
-            isPlaying: controller.value.isPlaying,
-            show: showPlayButton,
-            onPressed: _playPause,
-          ),
-        ));
+  KeyEventResult _handleKeyEvent(
+      KeyEvent event, int focusIndex, FocusNode node) {
+    if (event is! KeyDownEvent) {
+      return KeyEventResult.ignored;
+    }
+
+
+    //pass key event to options dialog
+    if (notifier.optionsDialogIsShowing) {
+      // for (var child in node.children) {
+      //   if (child.onKeyEvent != null) {
+      //     // Propagate the event to the child
+      //     KeyEventResult childResult = child.onKeyEvent!(child, event);
+      //     if (childResult == KeyEventResult.handled) {
+      //       // If the child handles the event, stop propagating
+      //       return KeyEventResult.handled;
+      //     }
+      //   }
+      // }
+    print("KKK 1 = > ${focusIndex}");
+
+      askFocus2.value = event;
+
+      //ignore all events in case options dialog is showing
+      return KeyEventResult.handled;
+    }
+
+    _cancelAndRestartTimer();
+
+    if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
+      notifier.naviagte(NaviationType.FORWARD);
+      return KeyEventResult.handled;
+    }
+
+    if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+      notifier.naviagte(NaviationType.BACKWARD);
+      return KeyEventResult.handled;
+    }
+
+    if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+      notifier.naviagte(NaviationType.BACKWARD);
+      return KeyEventResult.handled;
+    }
+
+    if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+      notifier.naviagte(NaviationType.FORWARD);
+      return KeyEventResult.handled;
+    }
+
+    if (event.logicalKey == LogicalKeyboardKey.select ||
+        event.logicalKey == LogicalKeyboardKey.enter) {
+      // Pass key events to children
+      for (var child in node.children) {
+        if (child.onKeyEvent != null) {
+          // Propagate the event to the child
+          KeyEventResult childResult = child.onKeyEvent!(child, event);
+          if (childResult == KeyEventResult.handled) {
+            // If the child handles the event, stop propagating
+            return KeyEventResult.handled;
+          }
+        }
+      }
+    }
+
+    // if (event is RawKeyDownEvent) {
+    //           _cancelAndRestartTimer();
+    //           RawKeyDownEvent rawKeyDownEvent = event;
+    //           debugPrint("OK =====> ${event.logicalKey.keyLabel}");
+    //           if (event.logicalKey.keyLabel == KEY_CENTER) {
+    //             _playPause();
+    //           }
+    //           if (event.logicalKey.keyLabel == KEY_RIGHT) {
+    //             Duration? p = await controller.position;
+    //             controller.seekTo(Duration(milliseconds: p!.inMilliseconds + (10 * 1000)));
+    //           }
+    //           if (event.logicalKey.keyLabel == KEY_LEFT) {
+    //             Duration? p = await controller.position;
+    //             controller.seekTo(Duration(milliseconds: p!.inMilliseconds - (10 * 1000)));
+    //           }
+    //         }
+    return KeyEventResult.ignored;
   }
 
-  GestureDetector _buildMuteButton(
+  Widget _buildMuteButton(
     VideoPlayerController controller,
     Color backgroundColor,
     Color iconColor,
     double barHeight,
     double buttonPadding,
   ) {
-    return GestureDetector(
-      onTap: () {
+    return DPadeHelperWidget(
+      focusIndex: 1,
+      onPressed: () {
         _cancelAndRestartTimer();
 
-        if (_latestValue.volume == 0) {
+        if (_videoPlayerValue.volume == 0) {
           controller.setVolume(_latestVolume ?? 0.5);
         } else {
           _latestVolume = controller.value.volume;
@@ -442,7 +508,9 @@ class _CupertinoControlsState extends State<CupertinoControls>
                   right: buttonPadding,
                 ),
                 child: Icon(
-                  _latestValue.volume > 0 ? Icons.volume_up : Icons.volume_off,
+                  _videoPlayerValue.volume > 0
+                      ? Icons.volume_up
+                      : Icons.volume_off,
                   color: iconColor,
                   size: 16,
                 ),
@@ -461,23 +529,27 @@ class _CupertinoControlsState extends State<CupertinoControls>
   ) {
     return GestureDetector(
       onTap: _playPause,
-      child: Container(
-        height: barHeight,
-        color: Colors.transparent,
-        padding: const EdgeInsets.only(
-          left: 6.0,
-          right: 6.0,
-        ),
-        child: AnimatedPlayPause(
-          color: widget.iconColor,
-          playing: controller.value.isPlaying,
+      child: DPadeHelperWidget(
+        focusIndex: 4,
+        onPressed: _playPause,
+        child: Container(
+          height: barHeight,
+          color: Colors.transparent,
+          padding: const EdgeInsets.only(
+            left: 6.0,
+            right: 6.0,
+          ),
+          child: AnimatedPlayPause(
+            color: widget.iconColor,
+            playing: controller.value.isPlaying,
+          ),
         ),
       ),
     );
   }
 
   Widget _buildPosition(Color iconColor) {
-    final position = _latestValue.position;
+    final position = _videoPlayerValue.position;
 
     return Padding(
       padding: const EdgeInsets.only(right: 12.0),
@@ -492,7 +564,7 @@ class _CupertinoControlsState extends State<CupertinoControls>
   }
 
   Widget _buildRemaining(Color iconColor) {
-    final position = _latestValue.duration - _latestValue.position;
+    final position = _videoPlayerValue.duration - _videoPlayerValue.position;
 
     return Padding(
       padding: const EdgeInsets.only(right: 12.0),
@@ -508,8 +580,9 @@ class _CupertinoControlsState extends State<CupertinoControls>
     if (chewieController.subtitle?.isEmpty ?? true) {
       return const SizedBox();
     }
-    return GestureDetector(
-      onTap: _subtitleToggle,
+    return DPadeHelperWidget(
+      onPressed: _subtitleToggle,
+      focusIndex: 6,
       child: Container(
         height: barHeight,
         color: Colors.transparent,
@@ -528,6 +601,7 @@ class _CupertinoControlsState extends State<CupertinoControls>
   }
 
   void _subtitleToggle() {
+    print("OKAY => _subtitleToggle");
     setState(() {
       _subtitleOn = !_subtitleOn;
     });
@@ -536,18 +610,22 @@ class _CupertinoControlsState extends State<CupertinoControls>
   GestureDetector _buildSkipBack(Color iconColor, double barHeight) {
     return GestureDetector(
       onTap: _skipBack,
-      child: Container(
-        height: barHeight,
-        color: Colors.transparent,
-        margin: const EdgeInsets.only(left: 10.0),
-        padding: const EdgeInsets.only(
-          left: 6.0,
-          right: 6.0,
-        ),
-        child: Icon(
-          CupertinoIcons.gobackward_15,
-          color: iconColor,
-          size: 18.0,
+      child: DPadeHelperWidget(
+        focusIndex: 3,
+        onPressed: _skipBack,
+        child: Container(
+          height: barHeight,
+          color: Colors.transparent,
+          margin: const EdgeInsets.only(left: 10.0),
+          padding: const EdgeInsets.only(
+            left: 6.0,
+            right: 6.0,
+          ),
+          child: Icon(
+            CupertinoIcons.gobackward_15,
+            color: iconColor,
+            size: 18.0,
+          ),
         ),
       ),
     );
@@ -556,26 +634,30 @@ class _CupertinoControlsState extends State<CupertinoControls>
   GestureDetector _buildSkipForward(Color iconColor, double barHeight) {
     return GestureDetector(
       onTap: _skipForward,
-      child: Container(
-        height: barHeight,
-        color: Colors.transparent,
-        padding: const EdgeInsets.only(
-          left: 6.0,
-          right: 8.0,
-        ),
-        margin: const EdgeInsets.only(
-          right: 8.0,
-        ),
-        child: Icon(
-          CupertinoIcons.goforward_15,
-          color: iconColor,
-          size: 18.0,
+      child: DPadeHelperWidget(
+        focusIndex: 5,
+        onPressed: _skipForward,
+        child: Container(
+          height: barHeight,
+          color: Colors.transparent,
+          padding: const EdgeInsets.only(
+            left: 6.0,
+            right: 8.0,
+          ),
+          margin: const EdgeInsets.only(
+            right: 8.0,
+          ),
+          child: Icon(
+            CupertinoIcons.goforward_15,
+            color: iconColor,
+            size: 18.0,
+          ),
         ),
       ),
     );
   }
 
-  GestureDetector _buildSpeedButton(
+  Widget _buildSpeedButton(
     VideoPlayerController controller,
     Color iconColor,
     double barHeight,
@@ -590,7 +672,7 @@ class _CupertinoControlsState extends State<CupertinoControls>
           useRootNavigator: chewieController.useRootNavigator,
           builder: (context) => _PlaybackSpeedDialog(
             speeds: chewieController.playbackSpeeds,
-            selected: _latestValue.playbackSpeed,
+            selected: _videoPlayerValue.playbackSpeed,
           ),
         );
 
@@ -600,7 +682,7 @@ class _CupertinoControlsState extends State<CupertinoControls>
           selectedSpeed = chosenSpeed;
         }
 
-        if (_latestValue.isPlaying) {
+        if (_videoPlayerValue.isPlaying) {
           _startHideTimer();
         }
       },
@@ -763,7 +845,7 @@ class _CupertinoControlsState extends State<CupertinoControls>
   }
 
   void _playPause() {
-    final isFinished = _latestValue.position >= _latestValue.duration;
+    final isFinished = _videoPlayerValue.position >= _videoPlayerValue.duration;
 
     setState(() {
       if (controller.value.isPlaying) {
@@ -790,8 +872,8 @@ class _CupertinoControlsState extends State<CupertinoControls>
   Future<void> _skipBack() async {
     _cancelAndRestartTimer();
     final beginning = Duration.zero.inMilliseconds;
-    final skip =
-        (_latestValue.position - const Duration(seconds: 15)).inMilliseconds;
+    final skip = (_videoPlayerValue.position - const Duration(seconds: 15))
+        .inMilliseconds;
     await controller.seekTo(Duration(milliseconds: math.max(skip, beginning)));
     // Restoring the video speed to selected speed
     // A delay of 1 second is added to ensure a smooth transition of speed after reversing the video as reversing is an asynchronous function
@@ -802,9 +884,9 @@ class _CupertinoControlsState extends State<CupertinoControls>
 
   Future<void> _skipForward() async {
     _cancelAndRestartTimer();
-    final end = _latestValue.duration.inMilliseconds;
-    final skip =
-        (_latestValue.position + const Duration(seconds: 15)).inMilliseconds;
+    final end = _videoPlayerValue.duration.inMilliseconds;
+    final skip = (_videoPlayerValue.position + const Duration(seconds: 15))
+        .inMilliseconds;
     await controller.seekTo(Duration(milliseconds: math.min(skip, end)));
     // Restoring the video speed to selected speed
     // A delay of 1 second is added to ensure a smooth transition of speed after forwarding the video as forwaring is an asynchronous function
@@ -851,7 +933,7 @@ class _CupertinoControlsState extends State<CupertinoControls>
     }
 
     setState(() {
-      _latestValue = controller.value;
+      _videoPlayerValue = controller.value;
       _subtitlesPosition = controller.value.position;
     });
   }
