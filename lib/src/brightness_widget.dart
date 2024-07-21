@@ -51,44 +51,47 @@ class BrightnessWidgetState extends State<BrightnessWidget> {
         height: screenOrientation == Orientation.landscape
             ? MediaQuery.of(context).size.height * 0.5
             : MediaQuery.of(context).size.width * 0.4,
-        child: IntrinsicWidth(
-          child: Row(
-            children: [
-              const Icon(
-                Icons.brightness_4,
-                color: Colors.white,
-              ),
-              const SizedBox(width: 8.0),
-              RotatedBox(
-                quarterTurns: 3,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8.0),
-                    color: Colors.grey.shade800.withOpacity(0.3),
-                  ),
-                  child: StreamBuilder<double>(
-                      stream:
-                          ScreenBrightness.instance.onCurrentBrightnessChanged,
-                      builder: (context, snapshot) {
-                        _sliderValue = snapshot.data ?? 0.0;
-                        if (snapshot.hasData) {
-                          _sliderValue = snapshot.data!;
-                        }
-                        debugPrint('currentBrightness: $_sliderValue');
-                        return Slider(
-                          value: _sliderValue,
-                          onChanged: setBrightness,
-                          min: 0,
-                          max: 1,
-                          activeColor: Colors.white,
-                        );
-                      }),
+        child: Transform.scale(
+          scale: 0.6,
+          child: IntrinsicWidth(
+            child: Row(
+              children: [
+                const Icon(
+                  Icons.brightness_4,
+                  color: Colors.white,
                 ),
-              ),
-            ],
+                const SizedBox(width: 8.0),
+                RotatedBox(
+                  quarterTurns: 3,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8.0),
+                      color: Colors.grey.shade800.withOpacity(0.3),
+                    ),
+                    child: StreamBuilder<double>(
+                        stream:
+                            ScreenBrightness.instance.onCurrentBrightnessChanged,
+                        builder: (context, snapshot) {
+                          _sliderValue = snapshot.data ?? 0.0;
+                          if (snapshot.hasData) {
+                            _sliderValue = snapshot.data!;
+                          }
+                          debugPrint('currentBrightness: $_sliderValue');
+                          return Slider(
+                            value: _sliderValue,
+                            onChanged: setBrightness,
+                            min: 0,
+                            max: 1,
+                            activeColor: Colors.white,
+                          );
+                        }),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

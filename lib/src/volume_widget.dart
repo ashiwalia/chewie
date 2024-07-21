@@ -46,43 +46,46 @@ class _VolumeWidgetState extends State<VolumeWidget> {
         height: screenOrientation == Orientation.landscape
             ? MediaQuery.of(context).size.height * 0.5
             : MediaQuery.of(context).size.width * 0.4,
-        child: IntrinsicWidth(
-          child: Row(
-            children: [
-              const SizedBox(
-                width: 20
-              ),
-              RotatedBox(
-                quarterTurns: 3,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8.0),
-                    color: Colors.grey.shade800.withOpacity(0.3),
-                  ),
-                  child: Slider(
-                    value: _sliderValue,
-                    onChanged: (double value) {
-                      setState(() {
-                        _sliderValue = value;
-                        VolumeController()
-                            .setVolume(_sliderValue, showSystemUI: false);
-                      });
-                    },
-                    min: 0,
-                    max: 1,
-                    activeColor: Colors.white,
+        child: Transform.scale(
+          scale: 0.6,
+          child: IntrinsicWidth(
+            child: Row(
+              children: [
+                // const SizedBox(
+                //   width: 10
+                // ),
+                RotatedBox(
+                  quarterTurns: 3,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8.0),
+                      color: Colors.grey.shade800.withOpacity(0.3),
+                    ),
+                    child: Slider(
+                      value: _sliderValue,
+                      onChanged: (double value) {
+                        setState(() {
+                          _sliderValue = value;
+                          VolumeController()
+                              .setVolume(_sliderValue, showSystemUI: false);
+                        });
+                      },
+                      min: 0,
+                      max: 1,
+                      activeColor: Colors.white,
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(width: 8.0),
-              const Icon(
-                Icons.volume_up,
-                color: Colors.white,
-              ),
-            ],
+                const SizedBox(width: 8.0),
+                const Icon(
+                  Icons.volume_up,
+                  color: Colors.white,
+                ),
+              ],
+            ),
           ),
         ),
       ),
