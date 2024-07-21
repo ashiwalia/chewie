@@ -31,7 +31,7 @@ class _VolumeWidgetState extends State<VolumeWidget> {
     });
   }
 
-   @override
+  @override
   void dispose() {
     VolumeController().removeListener();
     super.dispose();
@@ -41,46 +41,49 @@ class _VolumeWidgetState extends State<VolumeWidget> {
   Widget build(BuildContext context) {
     var screenOrientation = MediaQuery.of(context).orientation;
     return Align(
-      alignment: Alignment.topLeft,
+      alignment: Alignment.centerLeft,
       child: SizedBox(
         height: screenOrientation == Orientation.landscape
-            ? MediaQuery.of(context).size.height * 0.7
-            : MediaQuery.of(context).size.width * 0.5,
-        child: Column(
-          children: [
-            SizedBox(
-              height: screenOrientation == Orientation.landscape ? 40 : 10,
-            ),
-            Expanded(
-              child: RotatedBox(
+            ? MediaQuery.of(context).size.height * 0.5
+            : MediaQuery.of(context).size.width * 0.4,
+        child: IntrinsicWidth(
+          child: Row(
+            children: [
+              const SizedBox(
+                width: 20
+              ),
+              RotatedBox(
                 quarterTurns: 3,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 4,
+                  ),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8.0),
-                    color: Colors.grey.shade800.withOpacity(0.5),
+                    color: Colors.grey.shade800.withOpacity(0.3),
                   ),
                   child: Slider(
                     value: _sliderValue,
                     onChanged: (double value) {
                       setState(() {
                         _sliderValue = value;
-                        VolumeController().setVolume(_sliderValue, showSystemUI: false);
+                        VolumeController()
+                            .setVolume(_sliderValue, showSystemUI: false);
                       });
                     },
                     min: 0,
                     max: 1,
-                    activeColor: colorPrimary,
+                    activeColor: Colors.white,
                   ),
                 ),
               ),
-            ),
-            const SizedBox(height: 8.0),
-            const Icon(
-              Icons.volume_up,
-              color: Colors.white,
-            ),
-          ],
+              const SizedBox(width: 8.0),
+              const Icon(
+                Icons.volume_up,
+                color: Colors.white,
+              ),
+            ],
+          ),
         ),
       ),
     );

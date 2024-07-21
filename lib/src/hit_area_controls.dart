@@ -1,3 +1,4 @@
+import 'package:chewie/src/brightness_widget.dart';
 import 'package:chewie/src/volume_widget.dart';
 import 'package:flutter/material.dart';
 
@@ -42,7 +43,10 @@ class _HitAreaControlsState extends State<HitAreaControls> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          if (widget.showSeekButton) VolumeWidget(),
+          if (widget.showSeekButton) ...[
+            SizedBox(width: 10),
+            VolumeWidget(),
+          ],
           widget.showSeekButton
               ? SeekControlButton(
                   backgroundColor: widget.backgroundColor,
@@ -72,6 +76,10 @@ class _HitAreaControlsState extends State<HitAreaControls> {
                   icon: Icons.fast_forward,
                 )
               : const SizedBox.shrink(),
+          if (widget.showSeekButton) ...[
+            BrightnessWidget(),
+            SizedBox(width: 20)
+          ],
         ],
       ),
     );

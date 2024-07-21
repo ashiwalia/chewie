@@ -17,6 +17,7 @@ dependencies:
   volume_controller:
     git:
       url: git@github.com:ashiwalia/flutter_volume_slider.git
+  screen_brightness: ^1.0.1
 
 dev_dependencies:
   flutter_test:
