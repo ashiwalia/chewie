@@ -1,9 +1,11 @@
+import 'package:chewie/src/volume_widget.dart';
 import 'package:flutter/material.dart';
 
+import 'app_colors.dart';
 import 'center_play_button.dart';
 import 'seek_control_button.dart';
 
-class HitAreaControls extends StatelessWidget {
+class HitAreaControls extends StatefulWidget {
   const HitAreaControls({
     Key? key,
     required this.onTapPlay,
@@ -30,40 +32,48 @@ class HitAreaControls extends StatelessWidget {
   final bool showSeekButton;
 
   @override
+  State<HitAreaControls> createState() => _HitAreaControlsState();
+}
+
+class _HitAreaControlsState extends State<HitAreaControls> {
+  @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        showSeekButton
-            ? SeekControlButton(
-                backgroundColor: backgroundColor,
-                iconColor: iconColor,
-                onPressed: seekRewind,
-                onDoublePressed: seekRewind,
-                icon: Icons.fast_rewind,
-              )
-            : const SizedBox.shrink(),
-        GestureDetector(
-          onTap: onTapPlay,
-          child: CenterPlayButton(
-            backgroundColor: backgroundColor,
-            iconColor: iconColor,
-            isFinished: isFinished,
-            isPlaying: isPlaying,
-            show: showPlayButton,
-            onPressed: onPressedPlay,
+    return Container(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          if (widget.showSeekButton) VolumeWidget(),
+          widget.showSeekButton
+              ? SeekControlButton(
+                  backgroundColor: widget.backgroundColor,
+                  iconColor: widget.iconColor,
+                  onPressed: widget.seekRewind,
+                  onDoublePressed: widget.seekRewind,
+                  icon: Icons.fast_rewind,
+                )
+              : const SizedBox.shrink(),
+          GestureDetector(
+            onTap: widget.onTapPlay,
+            child: CenterPlayButton(
+              backgroundColor: widget.backgroundColor,
+              iconColor: widget.iconColor,
+              isFinished: widget.isFinished,
+              isPlaying: widget.isPlaying,
+              show: widget.showPlayButton,
+              onPressed: widget.onPressedPlay,
+            ),
           ),
-        ),
-        showSeekButton
-            ? SeekControlButton(
-                backgroundColor: backgroundColor,
-                iconColor: iconColor,
-                onPressed: seekForward,
-                onDoublePressed: seekForward,
-                icon: Icons.fast_forward,
-              )
-            : const SizedBox.shrink(),
-      ],
+          widget.showSeekButton
+              ? SeekControlButton(
+                  backgroundColor: widget.backgroundColor,
+                  iconColor: widget.iconColor,
+                  onPressed: widget.seekForward,
+                  onDoublePressed: widget.seekForward,
+                  icon: Icons.fast_forward,
+                )
+              : const SizedBox.shrink(),
+        ],
+      ),
     );
   }
 }
