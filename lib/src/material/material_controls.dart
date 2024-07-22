@@ -76,40 +76,35 @@ class _MaterialControlsState extends State<MaterialControls>
           );
     }
 
-    return MouseRegion(
-      onHover: (_) {
-        _cancelAndRestartTimer();
-      },
-      child: GestureDetector(
-        onTap: () => _cancelAndRestartTimer(),
-        child: AbsorbPointer(
-          absorbing: notifier.hideStuff,
-          child: Stack(
-            children: [
-              if (_displayBufferingIndicator)
-                const Center(
-                  child: CircularProgressIndicator(),
-                )
-              else
-                _buildHitArea(),
-              _buildActionBar(),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: <Widget>[
-                  if (_subtitleOn)
-                    Transform.translate(
-                      offset: Offset(
-                        0.0,
-                        notifier.hideStuff ? barHeight * 0.8 : 0.0,
-                      ),
-                      child:
-                          _buildSubtitles(context, chewieController.subtitle!),
+    return GestureDetector(
+      onTap: () => _cancelAndRestartTimer(),
+      child: AbsorbPointer(
+        absorbing: notifier.hideStuff,
+        child: Stack(
+          children: [
+            if (_displayBufferingIndicator)
+              const Center(
+                child: CircularProgressIndicator(),
+              )
+            else
+              _buildHitArea(),
+            _buildActionBar(),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: <Widget>[
+                if (_subtitleOn)
+                  Transform.translate(
+                    offset: Offset(
+                      0.0,
+                      notifier.hideStuff ? barHeight * 0.8 : 0.0,
                     ),
-                  _buildBottomBar(context),
-                ],
-              ),
-            ],
-          ),
+                    child:
+                        _buildSubtitles(context, chewieController.subtitle!),
+                  ),
+                _buildBottomBar(context),
+              ],
+            ),
+          ],
         ),
       ),
     );
@@ -499,6 +494,13 @@ class _MaterialControlsState extends State<MaterialControls>
   }
 
   void _cancelAndRestartTimer() {
+    // hide stuff if already showing
+    if(!notifier.hideStuff) {
+      setState(() {
+        notifier.hideStuff = true;
+      });
+      return;
+    }
     _hideTimer?.cancel();
     _startHideTimer();
 
