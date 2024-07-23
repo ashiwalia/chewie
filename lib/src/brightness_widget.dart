@@ -20,6 +20,7 @@ class BrightnessWidgetState extends State<BrightnessWidget> {
 
     ScreenBrightness().current.then((value) {
       _sliderValue = value;
+      print('currentBrightness 1: $_sliderValue');
       setState(() {});
     });
   }
@@ -75,8 +76,7 @@ class BrightnessWidgetState extends State<BrightnessWidget> {
                         stream:
                             ScreenBrightness.instance.onCurrentBrightnessChanged,
                         builder: (context, snapshot) {
-                          _sliderValue = snapshot.data ?? 0.0;
-                          if (snapshot.hasData) {
+                          if (snapshot.hasData && snapshot.data != null) {
                             _sliderValue = snapshot.data!;
                           }
                           debugPrint('currentBrightness: $_sliderValue');
