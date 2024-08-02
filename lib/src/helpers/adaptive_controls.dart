@@ -1,11 +1,10 @@
 import 'package:chewie/chewie.dart';
-import 'package:chewie/src/material/material_desktop_controls.dart';
 import 'package:flutter/material.dart';
 
 class AdaptiveControls extends StatelessWidget {
   const AdaptiveControls({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

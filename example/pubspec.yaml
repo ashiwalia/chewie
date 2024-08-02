@@ -4,7 +4,8 @@ version: 1.0.0
 publish_to: none
 
 environment:
-  sdk: '>=2.12.0-0 <3.0.0'
+  sdk: '>=3.3.0 <4.0.0'
+  flutter: ">=3.19.0"
 
 dependencies:
   chewie:
@@ -12,10 +13,11 @@ dependencies:
   flutter:
     sdk: flutter
 
+  video_player: ^2.9.1
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  lint: ^1.3.0
+  flutter_lints: ^4.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://www.dartlang.org/tools/pub/pubspec

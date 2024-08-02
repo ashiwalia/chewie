@@ -29,7 +29,7 @@ class Subtitle {
     int? index,
     Duration? start,
     Duration? end,
-    String? text,
+    dynamic text,
   }) {
     return Subtitle(
       index: index ?? this.index,
@@ -42,7 +42,7 @@ class Subtitle {
   final int index;
   final Duration start;
   final Duration end;
-  final String text;
+  final dynamic text;
 
   @override
   String toString() {
@@ -50,14 +50,14 @@ class Subtitle {
   }
 
   @override
-  bool operator ==(Object o) {
-    if (identical(this, o)) return true;
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
 
-    return o is Subtitle &&
-        o.index == index &&
-        o.start == start &&
-        o.end == end &&
-        o.text == text;
+    return other is Subtitle &&
+        other.index == index &&
+        other.start == start &&
+        other.end == end &&
+        other.text == text;
   }
 
   @override

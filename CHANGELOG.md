@@ -1,3 +1,127 @@
+## 1.8.2
+* ⬆️ [#842](https://github.com/fluttercommunity/chewie/pull/842): package upgrades. Thanks [vaishnavi-2301](https://github.com/vaishnavi-2301).
+
+## 1.8.1
+* ⬆️ [#825](https://github.com/fluttercommunity/chewie/pull/825): Upgraded `wakelock_plus` to version `1.2.2`. Thanks [diegotori](https://github.com/diegotori).
+
+## 1.8.0
+* 🛠️ [#814](https://github.com/fluttercommunity/chewie/pull/814): Refactor VideoPlayerController initialization to adhere to video_player ^2.8.2 guidelines. Thanks [ishworpanta10](https://github.com/ishworpanta10).
+* 🛠️ [#815](https://github.com/fluttercommunity/chewie/pull/815): Fix the Safe area conflict for material controls in Android. Thanks [MadGeorge](https://github.com/MadGeorge).
+* 🛠️ [#821](https://github.com/fluttercommunity/chewie/pull/821): Upgrade chewie's dependency package. Thanks [ycv005](https://github.com/ycv005).
+* 🛠️ [#824](https://github.com/fluttercommunity/chewie/pull/824): Flutter 3.19 enforcement. Thanks [diegotori](https://github.com/diegotori).
+* **BREAKING CHANGE**: Library now requires at least Flutter and Dart versions `3.19.0` and `3.3` respectively.
+
+
+## 1.7.5
+* 🛠️ [#810](https://github.com/fluttercommunity/chewie/pull/810): Fixed : Web full screen issue (#790 #688). Thanks [ToddZeil](https://github.com/ToddZeil).
+* 🛠️ [#802](https://github.com/fluttercommunity/chewie/pull/802): Update chewie_player.dart. Thanks [B0yma](https://github.com/B0yma).
+
+## 1.7.4
+* 🛠️ [#774](https://github.com/fluttercommunity/chewie/pull/774): Fixed : Playback speed reset on forwarding video. Thanks [Kronos-2701](https://github.com/Kronos-2701).
+
+## 1.7.3
+* 🛠️ [#777](https://github.com/fluttercommunity/chewie/pull/777): fix display size while Chewie wrapped by some rotate widget. Thanks [bailyzheng](https://github.com/bailyzheng).
+
+## 1.7.2
+* 🛠️ [#798](https://github.com/fluttercommunity/chewie/pull/798): Fix: Progress bar does not follow drag #789. Thanks [koutaro-masaki](https://github.com/koutaro-masaki).
+
+## 1.7.1
+* 🛠️ [#772](https://github.com/fluttercommunity/chewie/pull/772): Stop force disabling wakelock. Thanks [jan-milovanovic](https://github.com/jan-milovanovic).
+* ⬆️ [#775](https://github.com/fluttercommunity/chewie/pull/775): Flutter `3.13` iOS example app upgrade. Thanks [diegotori](https://github.com/diegotori).
+
+## 1.7.0
+* 🛠️ [#754](https://github.com/fluttercommunity/chewie/pull/754): Upgraded `wakelock_plus` to version `1.1.0`. Thanks [diegotori](https://github.com/diegotori).
+* **BREAKING CHANGE**: Library now requires at least Dart and Flutter versions `2.18` and `3.3.0` respectively.
+
+## 1.6.0+1
+* Added Flutter Community Banner to `README.md`. Thanks [diegotori](https://github.com/diegotori).
+
+## 1.6.0
+* [#747](https://github.com/fluttercommunity/chewie/pull/747): Migrated from `wakelock` to `wakelock_plus`. Thanks [diegotori](https://github.com/diegotori).
+* Also upgrades `video_player` from `2.4.7` to `2.7.0`.
+* **IMPORTANT**: Library now requires `Flutter`, version `2.11.0` or higher.
+
+## 1.5.0
+* 🛠️ [#712](https://github.com/fluttercommunity/chewie/pull/712): Progress Bars can now be disabled by setting `ChewieController.draggableProgressBar` to `false`. Thanks [shiyiya](https://github.com/shiyiya).
+* ⬆️ Increased Dart SDK constraint to cover Dart `3.0.0` and higher.
+
+## 1.4.1
+* 🛠️ [#719](https://github.com/fluttercommunity/chewie/pull/719): Fix overlay not visible. Thanks [jaripekkala](https://github.com/jaripekkala).
+
+## 1.4.0
+* 🛠️ [#701](https://github.com/fluttercommunity/chewie/pull/701): Added Dart Analysis fixes due to Flutter 3.7. Thanks [diegotori](https://github.com/diegotori).
+
+## 1.3.6
+* 🛠️ [#681](https://github.com/fluttercommunity/chewie/pull/681): Flutter `3.3` lint fixes. Thanks [diegotori](https://github.com/diegotori).
+
+* ⬆️ [#676](https://github.com/fluttercommunity/chewie/pull/676): Allow Chewie controls to be positioned to allow for a larger safe area. Thanks [jweidner-mbible](https://github.com/jweidner-mbible).
+
+## 1.3.5
+
+* ⬆️ [#669](https://github.com/fluttercommunity/chewie/pull/669): Fix for CenterPlayButton UI bug when using Material 3. Thanks [luis901101](https://github.com/luis901101).
+* ⬆️ [#658](https://github.com/fluttercommunity/chewie/pull/658): Add transformationController to Interactive Viewer. Thanks [Geevies](https://github.com/Geevies).
+* ⬆️ update `video_player` to 2.4.7
+* ⬆️ update `wakelock` to 0.6.2
+* 🛠️ Fixed new linting issues
+* 💡 Library is now using `flutter_lints` for all of its linting needs.
+
+## 1.3.4
+* ⬆️ [#646](https://github.com/fluttercommunity/chewie/pull/646): Fix to videos recorded with an orientation of 180° ( landscapeRight) being reversed on Android. Thanks [williamviktorsson](https://github.com/williamviktorsson).
+* ⬆️ [#623](https://github.com/fluttercommunity/chewie/pull/623): [Android] Add a delay before displaying progress indicator. Thanks [henri2h](https://github.com/henri2h).
+
+## 1.3.3
+* ⬆️ [#634](https://github.com/fluttercommunity/chewie/pull/634): chore: Move very_good_analysis to dev_dependencies. Thanks [JCQuintas](https://github.com/JCQuintas).
+
+## 1.3.2
+* ⬆️ [#626](https://github.com/fluttercommunity/chewie/pull/626): Added customizable timer to hide controls. Thanks [BuginRug](https://github.com/BuginRug).
+
+## 1.3.1
+* ⬆️ [#617](https://github.com/fluttercommunity/chewie/pull/617): Allow video zooming with InteractiveViewer widget. Thanks [jmsanc](https://github.com/jmsanc).
+
+## 1.3.0
+
+* ⬆️ [#598](https://github.com/fluttercommunity/chewie/pull/598): Update `wakelock` to `^0.6.1+1`. Thanks [fehernyul](https://github.com/fehernyul).
+* ⬆️ [#599](https://github.com/fluttercommunity/chewie/pull/599): Uniform controls. Thanks [BuginRug](https://github.com/BuginRug).
+
+  **Slight Breaking Change**. Instead of:
+  
+  ```dart
+  typedef ChewieRoutePageBuilder = Widget Function(
+  	  BuildContext context,
+  	  Animation<double> animation,
+      Animation<double> secondaryAnimation,
+      _ChewieControllerProvider controllerProvider,
+  );
+  ```
+  
+  It is now:
+  
+  ```dart
+  typedef ChewieRoutePageBuilder = Widget Function(
+  	  BuildContext context,
+  	  Animation<double> animation,
+      Animation<double> secondaryAnimation,
+      ChewieControllerProvider controllerProvider,
+  );
+  ```
+  
+  TL;DR: We had to make `_ChewieControllerProvider` public.
+  
+* 🛠️ Fixed lint and formatting problems
+* Under New Management under the auspices of [Flutter Community](https://github.com/fluttercommunity), and new maintainers [diegotori](https://github.com/diegotori) and [maherjaafar](https://github.com/maherjaafar).
+
+## 1.2.3
+
+* ⬆️ Update 'provider' to 6.0.1
+  - fixes [#568](https://github.com/brianegan/chewie/issues/568)
+* ⬆️ Update 'video_player' to 2.2.7
+* ⬆️ Update 'wakelock' to 0.5.6
+* ⬆️ Update 'lint' to 1.7.2
+* ⬆️ Update roadmap
+* 🛠️ Fix lint problems
+* 💡 Add very_good_analysis package
+* 💡 Add analysis_options.yaml for example app
+
 ## 1.2.2
 
 * 🛠️ Fix Incorrect use of ParentDataWidget.
@@ -204,3 +328,4 @@ Initial version of Chewie, the video player with a heart of gold.
   * Includes Material Player Controls
   * Includes Cupertino Player Controls
   * Spike version: Focus on good looking UI. Internal code is sloppy, needs a refactor and tests
+
