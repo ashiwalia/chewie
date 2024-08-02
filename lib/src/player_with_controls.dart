@@ -33,32 +33,32 @@ class PlayerWithControls extends StatelessWidget {
       ChewieController chewieController,
       BuildContext context,
     ) {
-      return Stack(
-        children: <Widget>[
-          if (chewieController.placeholder != null)
-            chewieController.placeholder!,
-          InteractiveViewer(
-            transformationController: chewieController.transformationController,
-            maxScale: chewieController.maxScale,
-            panEnabled: chewieController.zoomAndPan,
-            scaleEnabled: chewieController.zoomAndPan,
-            child: Center(
-              child: AspectRatio(
-                aspectRatio: chewieController.aspectRatio ??
-                    chewieController.videoPlayerController.value.aspectRatio,
-                child: VideoPlayer(chewieController.videoPlayerController),
+      return Consumer<PlayerNotifier>(builder: (
+        BuildContext context,
+        PlayerNotifier notifier,
+        Widget? widget,
+      ) {
+        return Stack(
+          children: <Widget>[
+            if (chewieController.placeholder != null)
+              chewieController.placeholder!,
+            InteractiveViewer(
+              transformationController:
+                  chewieController.transformationController,
+              maxScale: chewieController.maxScale,
+              panEnabled: chewieController.zoomAndPan,
+              scaleEnabled: chewieController.zoomAndPan,
+              child: Center(
+                child: AspectRatio(
+                  aspectRatio: chewieController.aspectRatio ??
+                      chewieController.videoPlayerController.value.aspectRatio,
+                  child: VideoPlayer(chewieController.videoPlayerController),
+                ),
               ),
             ),
-          ),
-          if (chewieController.overlay != null) chewieController.overlay!,
-          if (Theme.of(context).platform != TargetPlatform.iOS)
-            Consumer<PlayerNotifier>(
-              builder: (
-                BuildContext context,
-                PlayerNotifier notifier,
-                Widget? widget,
-              ) =>
-                  Visibility(
+            if (chewieController.overlay != null) chewieController.overlay!,
+            if (Theme.of(context).platform != TargetPlatform.iOS)
+              Visibility(
                 visible: !notifier.hideStuff,
                 child: AnimatedOpacity(
                   opacity: notifier.hideStuff ? 0.0 : 0.8,
@@ -71,16 +71,16 @@ class PlayerWithControls extends StatelessWidget {
                   ),
                 ),
               ),
-            ),
-          if (!chewieController.isFullScreen)
-            buildControls(context, chewieController)
-          else
-            SafeArea(
-              bottom: false,
-              child: buildControls(context, chewieController),
-            ),
-        ],
-      );
+            if (!chewieController.isFullScreen)
+              buildControls(context, chewieController)
+            else
+              SafeArea(
+                bottom: false,
+                child: buildControls(context, chewieController),
+              ),
+          ],
+        );
+      });
     }
 
     return LayoutBuilder(

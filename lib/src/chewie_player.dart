@@ -12,10 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
-import 'package:wakelock/wakelock.dart';
-import 'package:chewie/src/models/subtitle_model.dart';
-
-import 'material/models/option_item.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 import 'models/video_player_controller_extension.dart'
     show VideoPlayerControllerExtension;
@@ -48,16 +45,21 @@ class Chewie extends StatefulWidget {
 
 class ChewieState extends State<Chewie> {
   bool _isFullScreen = false;
-  late _ChewieControllerProvider controllerProvider;
+
+  bool get isControllerFullScreen => widget.controller.isFullScreen;
+  late PlayerNotifier notifier;
+  late ChewieControllerProvider controllerProvider;
 
   @override
   void initState() {
     super.initState();
     widget.controller.addListener(listener);
-    controllerProvider = _ChewieControllerProvider(
+
+    notifier = PlayerNotifier.init();
+    controllerProvider = ChewieControllerProvider(
       controller: widget.controller,
       child: ChangeNotifierProvider<PlayerNotifier>.value(
-        value: PlayerNotifier(),
+        value: notifier,
         builder: (context, w) => const PlayerWithControls(),
       ),
     );
@@ -421,6 +423,8 @@ class ChewieController extends ChangeNotifier {
   /// Default: `null` -> resolutions/quality button will be hidden
   final Map<String, String>? resolutions;
 
+  static const defaultHideControlsTimer = Duration(seconds: 3);
+
   /// If false, the options button in MaterialUI and MaterialDesktopUI
   /// won't be shown.
   final bool showOptions;
@@ -579,7 +583,7 @@ class ChewieController extends ChangeNotifier {
 
   bool get isPlaying => videoPlayerController.value.isPlaying;
 
-  Future _initialize({
+  Future<void> _initialize({
     Duration? continueAt,
   }) async {
     await videoPlayerController.setLooping(looping);
@@ -674,19 +678,21 @@ class ChewieController extends ChangeNotifier {
             file: File.fromUri(Uri.parse(url)));
         break;
       case DataSourceType.network:
-        videoPlayerController =
-            videoPlayerController.copyWithNetwork(dataSource: url);
+        videoPlayerController = videoPlayerController.copyWithNetwork(
+          dataSource: url,
+        );
         break;
       default:
     }
 
     await _initialize(continueAt: position);
+   
   }
 }
 
-class _ChewieControllerProvider extends InheritedWidget {
-  const _ChewieControllerProvider({
-    Key? key,
+class ChewieControllerProvider extends InheritedWidget {
+  const ChewieControllerProvider({
+    super.key,
     required this.controller,
     required super.child,
   });
@@ -694,5 +700,5 @@ class _ChewieControllerProvider extends InheritedWidget {
   final ChewieController controller;
 
   @override
-  bool updateShouldNotify(_ChewieControllerProvider old) => true;
+  bool updateShouldNotify(ChewieControllerProvider old) => true;
 }

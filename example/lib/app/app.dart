@@ -47,27 +47,28 @@ class _ChewieDemoState extends State<ChewieDemo> {
   ];
 
   Future<void> initializePlayer() async {
-    _videoPlayerController1 = VideoPlayerController.network(
-        'https://file-examples-com.github.io/uploads/2017/04/file_example_MP4_480_1_5MG.mp4');
-    _videoPlayerController2 = VideoPlayerController.network(
-        'https://assets.mixkit.co/videos/preview/mixkit-a-girl-blowing-a-bubble-gum-at-an-amusement-park-1226-large.mp4');
+    _videoPlayerController1 = VideoPlayerController.networkUrl(
+        Uri.parse('https://assets.mixkit.co/videos/preview/mixkit-spinning-around-the-earth-29351-large.mp4'));
+    _videoPlayerController2 = VideoPlayerController.networkUrl(
+        Uri.parse('https://assets.mixkit.co/videos/preview/mixkit-a-girl-blowing-a-bubble-gum-at-an-amusement-park-1226-large.mp4'));
     await Future.wait([
       _videoPlayerController1.initialize(),
       _videoPlayerController2.initialize()
     ]);
     _chewieController = ChewieController(
       videoPlayerController: _videoPlayerController1,
+      progressIndicatorDelay: Duration(milliseconds: 1000 ?? 0),
       autoPlay: true,
       looping: true,
       resolutions: {
         "480p":
-            "https://file-examples-com.github.io/uploads/2017/04/file_example_MP4_480_1_5MG.mp4",
+            "https://assets.mixkit.co/videos/preview/mixkit-spinning-around-the-earth-29351-large.mp4",
         "640p":
-            "https://file-examples-com.github.io/uploads/2017/04/file_example_MP4_640_3MG.mp4",
+            "https://assets.mixkit.co/videos/preview/mixkit-daytime-city-traffic-aerial-view-56-large.mp4",
         "1280p":
-            "https://file-examples-com.github.io/uploads/2017/04/file_example_MP4_1280_10MG.mp4",
+            "https://assets.mixkit.co/videos/preview/mixkit-a-girl-blowing-a-bubble-gum-at-an-amusement-park-1226-large.mp4",
         "1920p":
-            "https://file-examples-com.github.io/uploads/2017/04/file_example_MP4_1920_18MG.mp4"
+            "https://assets.mixkit.co/videos/preview/mixkit-spinning-around-the-earth-29351-large.mp4"
       },
       subtitle: Subtitles([
         Subtitle(
@@ -111,6 +112,10 @@ class _ChewieDemoState extends State<ChewieDemo> {
       // ),
       // autoInitialize: true,
     );
+
+    setState(() {
+
+    });
   }
 
   int currPlayIndex = 0;

@@ -36,8 +36,8 @@ extension VideoPlayerControllerExtension on VideoPlayerController {
     VideoPlayerOptions? videoPlayerOptions,
     Map<String, String>? httpHeaders,
   }) {
-    return VideoPlayerController.network(
-      dataSource ?? this.dataSource,
+    return VideoPlayerController.networkUrl(
+      Uri.parse(dataSource ?? this.dataSource),
       formatHint: formatHint ?? this.formatHint,
       closedCaptionFile: closedCaptionFile ?? this.closedCaptionFile,
       videoPlayerOptions: videoPlayerOptions ?? this.videoPlayerOptions,

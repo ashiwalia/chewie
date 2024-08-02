@@ -527,10 +527,10 @@ class _MaterialControlsState extends State<MaterialControls>
     );
 
     if (choosenResolution != null) {
-      notifier.selectedResolution = choosenResolution;
-
       await chewieController
           .setResolution(chewieController.resolutions![choosenResolution]!);
+
+      notifier.selectedResolution = choosenResolution;
     }
 
     if (_latestValue.isPlaying) {

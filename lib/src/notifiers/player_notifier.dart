@@ -6,9 +6,11 @@ import 'package:flutter/material.dart';
 /// over all State-Changes inside chewie
 ///
 class PlayerNotifier extends ChangeNotifier {
-  bool _hideStuff = true;
+  PlayerNotifier._(
+      bool hideStuff,
+      ) : _hideStuff = hideStuff;
 
-  String? _selectedResolution;
+  bool _hideStuff;
 
   bool get hideStuff => _hideStuff;
 
@@ -17,10 +19,20 @@ class PlayerNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
+  String? _selectedResolution;
+
+
   String? get selectedResolution => _selectedResolution;
 
   set selectedResolution(String? value) {
     _selectedResolution = value;
     notifyListeners();
+  }
+
+  // ignore: prefer_constructors_over_static_methods
+  static PlayerNotifier init() {
+    return PlayerNotifier._(
+      true,
+    );
   }
 }
