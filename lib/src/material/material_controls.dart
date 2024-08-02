@@ -103,8 +103,7 @@ class _MaterialControlsState extends State<MaterialControls>
                       0.0,
                       notifier.hideStuff ? barHeight * 0.8 : 0.0,
                     ),
-                    child:
-                        _buildSubtitles(context, chewieController.subtitle!),
+                    child: _buildSubtitles(context, chewieController.subtitle!),
                   ),
                 _buildBottomBar(context),
               ],
@@ -549,6 +548,12 @@ class _MaterialControlsState extends State<MaterialControls>
           .setResolution(chewieController.resolutions![choosenResolution]!);
 
       notifier.selectedResolution = choosenResolution;
+
+      _chewieController = ChewieController.of(context);
+      controller = chewieController.videoPlayerController;
+
+      _dispose();
+      _initialize();
     }
 
     if (_latestValue.isPlaying) {
@@ -563,7 +568,7 @@ class _MaterialControlsState extends State<MaterialControls>
 
   void _cancelAndRestartTimer() {
     // hide stuff if already showing
-    if(!notifier.hideStuff) {
+    if (!notifier.hideStuff) {
       setState(() {
         notifier.hideStuff = true;
       });
