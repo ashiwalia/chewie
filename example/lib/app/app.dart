@@ -30,6 +30,7 @@ class _ChewieDemoState extends State<ChewieDemo> {
   void initState() {
     super.initState();
     initializePlayer();
+    
   }
 
   @override
@@ -113,6 +114,7 @@ class _ChewieDemoState extends State<ChewieDemo> {
       videoPlayerController: _videoPlayerController1,
       autoPlay: true,
       looping: true,
+      isTv: false,
       progressIndicatorDelay:
           bufferDelay != null ? Duration(milliseconds: bufferDelay!) : null,
 
@@ -122,6 +124,16 @@ class _ChewieDemoState extends State<ChewieDemo> {
             onTap: toggleVideo,
             iconData: Icons.live_tv_sharp,
             title: 'Toggle Video Src',
+          ),
+           OptionItem(
+            onTap: toggleVideo,
+            iconData: Icons.live_tv_sharp,
+            title: 'Test 1',
+          ),
+           OptionItem(
+            onTap: toggleVideo,
+            iconData: Icons.live_tv_sharp,
+            title: 'Test 2',
           ),
         ];
       },
@@ -138,7 +150,7 @@ class _ChewieDemoState extends State<ChewieDemo> {
               ),
       ),
 
-      hideControlsTimer: const Duration(seconds: 1),
+      hideControlsTimer: const Duration(seconds: 5),
 
       // Try playing around with some of these other options:
 
@@ -154,6 +166,11 @@ class _ChewieDemoState extends State<ChewieDemo> {
       // ),
       // autoInitialize: true,
     );
+ 
+ 
+    Future.delayed(const Duration(seconds: 1), () {
+      _chewieController?.enterFullScreen();
+    });
   }
 
   int currPlayIndex = 0;
@@ -348,6 +365,7 @@ class _DelaySliderState extends State<DelaySlider> {
   void initState() {
     super.initState();
     delay = widget.delay;
+    
   }
 
   @override
