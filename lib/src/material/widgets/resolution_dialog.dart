@@ -33,10 +33,13 @@ class _ResolutionDialogState extends State<ResolutionDialog> {
                 onTap: () => Navigator.pop(context, item.key),
                 leading: widget.selectedResolution != null
                     ? widget.selectedResolution! == item.key
-                        ? const Icon(Icons.done)
+                        ? const Icon(Icons.done, color: Colors.white)
                         : null
                     : null,
-                title: Text(item.key),
+                title: Text(
+                  item.key,
+                  style: const TextStyle(color: Colors.white),
+                ),
               );
             },
           ),
@@ -44,13 +47,15 @@ class _ResolutionDialogState extends State<ResolutionDialog> {
             padding: EdgeInsets.symmetric(horizontal: 16),
             child: Divider(
               thickness: 1.0,
+              color: Colors.white54,
             ),
           ),
           ListTile(
             onTap: () => Navigator.pop(context),
-            leading: const Icon(Icons.close),
+            leading: const Icon(Icons.close, color: Colors.white),
             title: Text(
               widget.cancelButtonText ?? 'Cancel',
+              style: const TextStyle(color: Colors.white),
             ),
           ),
         ],
