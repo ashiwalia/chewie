@@ -11,8 +11,8 @@ enum NaviationType { FORWARD, BACKWARD }
 
 class PlayerNotifier extends ChangeNotifier {
   PlayerNotifier._(
-    bool hideStuff,
-  ) : _hideStuff = hideStuff;
+      bool hideStuff,
+      ) : _hideStuff = hideStuff;
 
   bool _hideStuff;
 
@@ -20,6 +20,16 @@ class PlayerNotifier extends ChangeNotifier {
 
   set hideStuff(bool value) {
     _hideStuff = value;
+    notifyListeners();
+  }
+
+  String? _selectedResolution;
+
+
+  String? get selectedResolution => _selectedResolution;
+
+  set selectedResolution(String? value) {
+    _selectedResolution = value;
     notifyListeners();
   }
 

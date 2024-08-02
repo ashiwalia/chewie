@@ -11,8 +11,13 @@ import 'package:chewie/src/models/option_item.dart';
 import 'package:chewie/src/models/subtitle_model.dart';
 import 'package:chewie/src/notifiers/index.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
+import 'package:chewie/src/models/subtitle_model.dart';
+
+import 'widgets/playback_speed_dialog.dart';
+import 'widgets/resolution_dialog.dart';
 
 class MaterialControls extends StatefulWidget {
   const MaterialControls({
@@ -166,8 +171,40 @@ class _MaterialControlsState extends State<MaterialControls>
         iconData: Icons.speed,
         title: chewieController.optionsTranslation?.playbackSpeedButtonText ??
             'Playback speed',
-      )
+      ),
     ];
+
+    if (chewieController.subtitle != null &&
+        chewieController.subtitle!.isNotEmpty) {
+      options.add(
+        OptionItem(
+          onTap: () {
+            _onSubtitleTap();
+            Navigator.pop(context);
+          },
+          iconData: _subtitleOn
+              ? Icons.closed_caption
+              : Icons.closed_caption_off_outlined,
+          title: chewieController.optionsTranslation?.subtitlesButtonText ??
+              'Subtitles',
+        ),
+      );
+    }
+
+    if (chewieController.resolutions != null &&
+        chewieController.resolutions!.isNotEmpty) {
+      options.add(
+        OptionItem(
+          onTap: () {
+            Navigator.pop(context);
+            _onResolutionTap();
+          },
+          iconData: Icons.settings,
+          title: chewieController.optionsTranslation?.resolutionButtonText ??
+              'Resolution',
+        ),
+      );
+    }
 
     if (chewieController.additionalOptions != null &&
         chewieController.additionalOptions!(context).isNotEmpty) {
@@ -493,6 +530,37 @@ class _MaterialControlsState extends State<MaterialControls>
     });
   }
 
+  Future<void> _onResolutionTap() async {
+    _hideTimer?.cancel();
+
+    final choosenResolution = await showModalBottomSheet<String>(
+      context: context,
+      isScrollControlled: true,
+      useRootNavigator: true,
+      builder: (context) => ResolutionDialog(
+        reslutions: chewieController.resolutions!,
+        selectedResolution: notifier.selectedResolution,
+        cancelButtonText: chewieController.optionsTranslation?.cancelButtonText,
+      ),
+    );
+
+    if (choosenResolution != null) {
+      await chewieController
+          .setResolution(chewieController.resolutions![choosenResolution]!);
+
+      notifier.selectedResolution = choosenResolution;
+    }
+
+    if (_latestValue.isPlaying) {
+      _startHideTimer();
+    }
+    SchedulerBinding.instance!.addPostFrameCallback((_) {
+      if (mounted) {
+        setState(() {});
+      }
+    });
+  }
+
   void _cancelAndRestartTimer() {
     // hide stuff if already showing
     if(!notifier.hideStuff) {
@@ -651,7 +719,7 @@ class _MaterialControlsState extends State<MaterialControls>
               playedColor: Theme.of(context).colorScheme.secondary,
               handleColor: Theme.of(context).colorScheme.secondary,
               bufferedColor:
-                  Theme.of(context).colorScheme.background.withOpacity(0.5),
+                  Theme.of(context).colorScheme.surface.withOpacity(0.5),
               backgroundColor: Theme.of(context).disabledColor.withOpacity(.5),
             ),
       ),

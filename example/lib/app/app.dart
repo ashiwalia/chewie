@@ -48,97 +48,45 @@ class _ChewieDemoState extends State<ChewieDemo> {
   ];
 
   Future<void> initializePlayer() async {
-    _videoPlayerController1 =
-        VideoPlayerController.networkUrl(Uri.parse(srcs[currPlayIndex]));
-    _videoPlayerController2 =
-        VideoPlayerController.networkUrl(Uri.parse(srcs[currPlayIndex]));
+    _videoPlayerController1 = VideoPlayerController.networkUrl(
+        Uri.parse('https://assets.mixkit.co/videos/preview/mixkit-spinning-around-the-earth-29351-large.mp4'));
+    _videoPlayerController2 = VideoPlayerController.networkUrl(
+        Uri.parse('https://assets.mixkit.co/videos/preview/mixkit-a-girl-blowing-a-bubble-gum-at-an-amusement-park-1226-large.mp4'));
     await Future.wait([
       _videoPlayerController1.initialize(),
       _videoPlayerController2.initialize()
     ]);
-    _createChewieController();
-    setState(() {});
-  }
-
-  void _createChewieController() {
-    // final subtitles = [
-    //     Subtitle(
-    //       index: 0,
-    //       start: Duration.zero,
-    //       end: const Duration(seconds: 10),
-    //       text: 'Hello from subtitles',
-    //     ),
-    //     Subtitle(
-    //       index: 0,
-    //       start: const Duration(seconds: 10),
-    //       end: const Duration(seconds: 20),
-    //       text: 'Whats up? :)',
-    //     ),
-    //   ];
-
-    final subtitles = [
-      Subtitle(
-        index: 0,
-        start: Duration.zero,
-        end: const Duration(seconds: 10),
-        text: const TextSpan(
-          children: [
-            TextSpan(
-              text: 'Hello',
-              style: TextStyle(color: Colors.red, fontSize: 22),
-            ),
-            TextSpan(
-              text: ' from ',
-              style: TextStyle(color: Colors.green, fontSize: 20),
-            ),
-            TextSpan(
-              text: 'subtitles',
-              style: TextStyle(color: Colors.blue, fontSize: 18),
-            )
-          ],
-        ),
-      ),
-      Subtitle(
-        index: 0,
-        start: const Duration(seconds: 10),
-        end: const Duration(seconds: 20),
-        text: 'Whats up? :)',
-        // text: const TextSpan(
-        //   text: 'Whats up? :)',
-        //   style: TextStyle(color: Colors.amber, fontSize: 22, fontStyle: FontStyle.italic),
-        // ),
-      ),
-    ];
-
     _chewieController = ChewieController(
       videoPlayerController: _videoPlayerController1,
+      progressIndicatorDelay: Duration(milliseconds: 1000 ?? 0),
       autoPlay: true,
       looping: true,
       isTv: false,
-      progressIndicatorDelay:
-          bufferDelay != null ? Duration(milliseconds: bufferDelay!) : null,
-
-      additionalOptions: (context) {
-        return <OptionItem>[
-          OptionItem(
-            onTap: toggleVideo,
-            iconData: Icons.live_tv_sharp,
-            title: 'Toggle Video Src',
-          ),
-           OptionItem(
-            onTap: toggleVideo,
-            iconData: Icons.live_tv_sharp,
-            title: 'Test 1',
-          ),
-           OptionItem(
-            onTap: toggleVideo,
-            iconData: Icons.live_tv_sharp,
-            title: 'Test 2',
-          ),
-        ];
+      resolutions: {
+        "480p":
+            "https://assets.mixkit.co/videos/preview/mixkit-spinning-around-the-earth-29351-large.mp4",
+        "640p":
+            "https://assets.mixkit.co/videos/preview/mixkit-daytime-city-traffic-aerial-view-56-large.mp4",
+        "1280p":
+            "https://assets.mixkit.co/videos/preview/mixkit-a-girl-blowing-a-bubble-gum-at-an-amusement-park-1226-large.mp4",
+        "1920p":
+            "https://assets.mixkit.co/videos/preview/mixkit-spinning-around-the-earth-29351-large.mp4"
       },
-      subtitle: Subtitles(subtitles),
-      subtitleBuilder: (context, dynamic subtitle) => Container(
+      subtitle: Subtitles([
+        Subtitle(
+          index: 0,
+          start: Duration.zero,
+          end: const Duration(seconds: 10),
+          text: 'Hello from subtitles',
+        ),
+        Subtitle(
+          index: 0,
+          start: const Duration(seconds: 10),
+          end: const Duration(seconds: 20),
+          text: 'Whats up? :)',
+        ),
+      ]),
+      subtitleBuilder: (context, subtitle) => Container(
         padding: const EdgeInsets.all(10.0),
         child: subtitle is InlineSpan
             ? RichText(
@@ -166,10 +114,9 @@ class _ChewieDemoState extends State<ChewieDemo> {
       // ),
       // autoInitialize: true,
     );
- 
- 
-    Future.delayed(const Duration(seconds: 1), () {
-      _chewieController?.enterFullScreen();
+
+    setState(() {
+
     });
   }
 
@@ -228,8 +175,43 @@ class _ChewieDemoState extends State<ChewieDemo> {
                     onPressed: () {
                       setState(() {
                         _videoPlayerController1.pause();
-                        _videoPlayerController1.seekTo(Duration.zero);
-                        _createChewieController();
+                        _videoPlayerController1.seekTo(const Duration());
+                        _chewieController = _chewieController!.copyWith(
+                          videoPlayerController: _videoPlayerController1,
+                          autoPlay: true,
+                          looping: true,
+                          resolutions: {
+                            "480p":
+                                "https://file-examples-com.github.io/uploads/2017/04/file_example_MP4_480_1_5MG.mp4",
+                            "640p":
+                                "https://file-examples-com.github.io/uploads/2017/04/file_example_MP4_640_3MG.mp4",
+                            "1280p":
+                                "https://file-examples-com.github.io/uploads/2017/04/file_example_MP4_1280_10MG.mp4",
+                            "1920p":
+                                "https://file-examples-com.github.io/uploads/2017/04/file_example_MP4_1920_18MG.mp4"
+                          },
+                          subtitle: Subtitles([
+                            Subtitle(
+                              index: 0,
+                              start: Duration.zero,
+                              end: const Duration(seconds: 10),
+                              text: 'Hello from subtitles',
+                            ),
+                            Subtitle(
+                              index: 0,
+                              start: const Duration(seconds: 10),
+                              end: const Duration(seconds: 20),
+                              text: 'Whats up? :)',
+                            ),
+                          ]),
+                          subtitleBuilder: (context, subtitle) => Container(
+                            padding: const EdgeInsets.all(10.0),
+                            child: Text(
+                              subtitle,
+                              style: const TextStyle(color: Colors.white),
+                            ),
+                          ),
+                        );
                       });
                     },
                     child: const Padding(
