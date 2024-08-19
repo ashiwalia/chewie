@@ -53,6 +53,8 @@ class _MaterialControlsState extends State<MaterialControls>
   final barHeight = 48.0 * 1.5;
   final marginSize = 5.0;
 
+  bool isScreenLocked = false;
+
   late VideoPlayerController controller;
   ChewieController? _chewieController;
 
@@ -79,6 +81,33 @@ class _MaterialControlsState extends State<MaterialControls>
               size: 42,
             ),
           );
+    }
+
+    if (notifier.hideStuff == false && isScreenLocked) {
+      return SafeArea(
+        child: Stack(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(bottom: 50),
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      isScreenLocked = false;
+                    });
+                  },
+                  child: const Icon(
+                    Icons.lock_open_outlined,
+                    color: Colors.white,
+                    size: 42,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
     }
 
     return GestureDetector(
@@ -331,6 +360,7 @@ class _MaterialControlsState extends State<MaterialControls>
                       _buildMuteButton(controller),
                     const Spacer(),
                     if (chewieController.allowFullScreen) _buildExpandButton(),
+                    _buildLockButton()
                   ],
                 ),
               ),
@@ -406,6 +436,34 @@ class _MaterialControlsState extends State<MaterialControls>
               chewieController.isFullScreen
                   ? Icons.fullscreen_exit
                   : Icons.fullscreen,
+              color: Colors.white,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  GestureDetector _buildLockButton() {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          isScreenLocked = !isScreenLocked;
+        });
+      },
+      child: AnimatedOpacity(
+        opacity: notifier.hideStuff ? 0.0 : 1.0,
+        duration: const Duration(milliseconds: 300),
+        child: Container(
+          height: barHeight + (chewieController.isFullScreen ? 15.0 : 0),
+          margin: const EdgeInsets.only(right: 12.0),
+          padding: const EdgeInsets.only(
+            left: 8.0,
+            right: 8.0,
+          ),
+          child: const Center(
+            child: Icon(
+              Icons.lock_outline,
               color: Colors.white,
             ),
           ),
