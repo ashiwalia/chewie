@@ -33,6 +33,15 @@ class PlayerNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
+  String? _selectedEpisode;
+
+  String? get selectedEpisode => _selectedEpisode;
+
+  set selectedEpisode(String? value) {
+    _selectedEpisode = value;
+    notifyListeners();
+  }
+
   // ignore: prefer_constructors_over_static_methods
   static PlayerNotifier init() {
     return PlayerNotifier._(

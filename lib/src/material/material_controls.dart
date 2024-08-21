@@ -16,6 +16,7 @@ import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 import 'package:chewie/src/models/subtitle_model.dart';
 
+import 'widgets/episdoes_dialog.dart';
 import 'widgets/playback_speed_dialog.dart';
 import 'widgets/resolution_dialog.dart';
 
@@ -230,6 +231,21 @@ class _MaterialControlsState extends State<MaterialControls>
           iconData: Icons.settings,
           title: chewieController.optionsTranslation?.resolutionButtonText ??
               'Resolution',
+        ),
+      );
+    }
+
+    if (chewieController.episodes != null &&
+        chewieController.episodes!.isNotEmpty) {
+      options.add(
+        OptionItem(
+          onTap: () {
+            Navigator.pop(context);
+            _onEpisodesTap();
+          },
+          iconData: Icons.movie_filter_outlined,
+          title: chewieController.optionsTranslation?.resolutionButtonText ??
+              'Episodes',
         ),
       );
     }
@@ -603,9 +619,47 @@ class _MaterialControlsState extends State<MaterialControls>
 
     if (choosenResolution != null) {
       await chewieController
-          .setResolution(chewieController.resolutions![choosenResolution]!);
+          .updateDataSource(chewieController.resolutions![choosenResolution]!);
 
       notifier.selectedResolution = choosenResolution;
+
+      _chewieController = ChewieController.of(context);
+      controller = chewieController.videoPlayerController;
+
+      _dispose();
+      _initialize();
+    }
+
+    if (_latestValue.isPlaying) {
+      _startHideTimer();
+    }
+    SchedulerBinding.instance!.addPostFrameCallback((_) {
+      if (mounted) {
+        setState(() {});
+      }
+    });
+  }
+
+  Future<void> _onEpisodesTap() async {
+    _hideTimer?.cancel();
+
+    final chosenEpisode = await showModalBottomSheet<String>(
+      context: context,
+      isScrollControlled: true,
+      useRootNavigator: true,
+      builder: (context) => EpisodeDialog(
+        episodes: chewieController.episodes!,
+        selectedEpisode: notifier.selectedEpisode,
+        cancelButtonText: chewieController.optionsTranslation?.cancelButtonText,
+      ),
+    );
+
+    if (chosenEpisode != null) {
+      await chewieController.updateDataSource(
+          chewieController.episodes![chosenEpisode]!,
+          continueAtLastPosition: false);
+
+      notifier.selectedEpisode = chosenEpisode;
 
       _chewieController = ChewieController.of(context);
       controller = chewieController.videoPlayerController;

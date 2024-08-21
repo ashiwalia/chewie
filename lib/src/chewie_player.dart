@@ -305,6 +305,7 @@ class ChewieController extends ChangeNotifier {
     this.progressIndicatorDelay,
     this.hideControlsTimer = defaultHideControlsTimer,
     this.controlsSafeAreaMinimum = EdgeInsets.zero,
+    this.episodes,
   }) : assert(
           playbackSpeeds.every((speed) => speed > 0),
           'The playbackSpeeds values must all be greater than 0',
@@ -315,6 +316,7 @@ class ChewieController extends ChangeNotifier {
   ChewieController copyWith({
     VideoPlayerController? videoPlayerController,
     Map<String, String>? resolutions,
+    Map<String, String>? episodes,
     OptionsTranslation? optionsTranslation,
     double? aspectRatio,
     bool? autoInitialize,
@@ -409,6 +411,7 @@ class ChewieController extends ChangeNotifier {
       hideControlsTimer: hideControlsTimer ?? this.hideControlsTimer,
       progressIndicatorDelay:
           progressIndicatorDelay ?? this.progressIndicatorDelay,
+      episodes: episodes ?? this.episodes,
     );
   }
 
@@ -423,6 +426,18 @@ class ChewieController extends ChangeNotifier {
   ///
   /// Default: `null` -> resolutions/quality button will be hidden
   final Map<String, String>? resolutions;
+
+  /// Set your episodes here like for example:
+  /// ```dart
+  /// {
+  ///   'Enter Naruto': 'https://example.com/video.mp4',
+  ///   'Chunin Exams': 'https://example.com/video.mp4',
+  ///   'You Failed! Kakashi Final Decision':'https://example.com/video.mp4',
+  /// }
+  /// ```
+  ///
+  /// Default: `null` -> resolutions/quality button will be hidden
+  final Map<String, String>? episodes;
 
   static const defaultHideControlsTimer = Duration(seconds: 3);
 
@@ -669,7 +684,8 @@ class ChewieController extends ChangeNotifier {
     subtitle = Subtitles(newSubtitle);
   }
 
-  Future<void> setResolution(String url) async {
+  Future<void> updateDataSource(String url,
+      {continueAtLastPosition = true}) async {
     final position = await videoPlayerController.position;
 
     switch (videoPlayerController.dataSourceType) {
@@ -689,8 +705,7 @@ class ChewieController extends ChangeNotifier {
       default:
     }
 
-    await _initialize(continueAt: position);
-   
+    await _initialize(continueAt: continueAtLastPosition ? position : null);
   }
 }
 

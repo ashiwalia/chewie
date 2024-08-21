@@ -72,6 +72,10 @@ class _ChewieDemoState extends State<ChewieDemo> {
         "1920p":
             "https://assets.mixkit.co/videos/preview/mixkit-spinning-around-the-earth-29351-large.mp4"
       },
+      episodes: {
+        "1": "https://assets.mixkit.co/videos/preview/mixkit-spinning-around-the-earth-29351-large.mp4",
+        "2": "https://assets.mixkit.co/videos/preview/mixkit-daytime-city-traffic-aerial-view-56-large.mp4",
+      },
       subtitle: Subtitles([
         Subtitle(
           index: 0,
