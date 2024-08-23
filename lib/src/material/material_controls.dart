@@ -181,6 +181,7 @@ class _MaterialControlsState extends State<MaterialControls>
           duration: const Duration(milliseconds: 250),
           child: Row(
             children: [
+               _buildLockButton(),
               _buildSubtitleToggle(),
               if (chewieController.showOptions) _buildOptionsButton(),
             ],
@@ -376,10 +377,13 @@ class _MaterialControlsState extends State<MaterialControls>
                       _buildMuteButton(controller),
                     if (chewieController.episodes != null &&
                         chewieController.episodes!.isNotEmpty)
+                      _buildPreviousEpisodeButton(controller),
+                    if (chewieController.episodes != null &&
+                        chewieController.episodes!.isNotEmpty)
                       _buildNextEpisodeButton(controller),
                     const Spacer(),
                     if (chewieController.allowFullScreen) _buildExpandButton(),
-                    _buildLockButton()
+                   
                   ],
                 ),
               ),
@@ -424,11 +428,33 @@ class _MaterialControlsState extends State<MaterialControls>
         child: ClipRect(
           child: Container(
             height: barHeight,
-            padding: const EdgeInsets.only(
-              left: 6.0,
-            ),
+            margin: const EdgeInsets.symmetric(horizontal: 12.0),
             child: Icon(
               _latestValue.volume > 0 ? Icons.volume_up : Icons.volume_off,
+              color: Colors.white,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPreviousEpisodeButton(
+    VideoPlayerController controller,
+  ) {
+    return InkWell(
+      onTap: () {
+        _playPreviousEpisode();
+      },
+      child: AnimatedOpacity(
+        opacity: notifier.hideStuff ? 0.0 : 1.0,
+        duration: const Duration(milliseconds: 300),
+        child: ClipRect(
+          child: Container(
+            height: barHeight,
+            margin: const EdgeInsets.symmetric(horizontal: 12.0),
+            child: const Icon(
+              Icons.skip_previous_outlined,
               color: Colors.white,
             ),
           ),
@@ -677,6 +703,42 @@ class _MaterialControlsState extends State<MaterialControls>
 
     var chosenEpisode = chewieController.episodes!.keys.elementAt(
         (chewieController.episodes!.keys.toList().indexOf(oldEpisode!) + 1) %
+            chewieController.episodes!.length);
+
+    if (chosenEpisode != null) {
+      await chewieController.updateDataSource(
+          chewieController.episodes![chosenEpisode]!,
+          continueAtLastPosition: false);
+
+      notifier.selectedEpisode = chosenEpisode;
+
+      _chewieController = ChewieController.of(context);
+      controller = chewieController.videoPlayerController;
+
+      _dispose();
+      _initialize();
+    }
+
+    if (_latestValue.isPlaying) {
+      _startHideTimer();
+    }
+    SchedulerBinding.instance!.addPostFrameCallback((_) {
+      if (mounted) {
+        setState(() {});
+      }
+    });
+  }
+
+  Future<void> _playPreviousEpisode() async {
+    var oldEpisode = notifier.selectedEpisode;
+
+    oldEpisode ??= chewieController.episodes!.keys.first;
+
+    ///The modulo operator % ensures that the index wraps around to the start
+    ///if it exceeds the length of the list, implementing a circular behavior.
+
+    var chosenEpisode = chewieController.episodes!.keys.elementAt(
+        (chewieController.episodes!.keys.toList().indexOf(oldEpisode!) - 1) %
             chewieController.episodes!.length);
 
     if (chosenEpisode != null) {
