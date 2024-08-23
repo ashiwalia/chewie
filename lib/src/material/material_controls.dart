@@ -181,7 +181,7 @@ class _MaterialControlsState extends State<MaterialControls>
           duration: const Duration(milliseconds: 250),
           child: Row(
             children: [
-               _buildLockButton(),
+              _buildLockButton(),
               _buildSubtitleToggle(),
               if (chewieController.showOptions) _buildOptionsButton(),
             ],
@@ -192,17 +192,7 @@ class _MaterialControlsState extends State<MaterialControls>
   }
 
   Widget _buildOptionsButton() {
-    final options = <OptionItem>[
-      OptionItem(
-        onTap: () async {
-          Navigator.pop(context);
-          _onSpeedButtonTap();
-        },
-        iconData: Icons.speed,
-        title: chewieController.optionsTranslation?.playbackSpeedButtonText ??
-            'Playback speed',
-      ),
-    ];
+    final options = <OptionItem>[];
 
     if (chewieController.subtitle != null &&
         chewieController.subtitle!.isNotEmpty) {
@@ -383,7 +373,6 @@ class _MaterialControlsState extends State<MaterialControls>
                       _buildNextEpisodeButton(controller),
                     const Spacer(),
                     if (chewieController.allowFullScreen) _buildExpandButton(),
-                   
                   ],
                 ),
               ),
