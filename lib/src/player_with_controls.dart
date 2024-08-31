@@ -43,7 +43,7 @@ class PlayerWithControls extends StatelessWidget {
             if (chewieController.placeholder != null)
               chewieController.placeholder!,
             Transform.scale(
-              scale: 1.5,
+              scale: 1,
               child: Center(
                 child: AspectRatio(
                   aspectRatio: chewieController.aspectRatio ??
