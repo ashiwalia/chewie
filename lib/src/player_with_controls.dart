@@ -42,12 +42,8 @@ class PlayerWithControls extends StatelessWidget {
           children: <Widget>[
             if (chewieController.placeholder != null)
               chewieController.placeholder!,
-            InteractiveViewer(
-              transformationController:
-                  chewieController.transformationController,
-              maxScale: chewieController.maxScale,
-              panEnabled: chewieController.zoomAndPan,
-              scaleEnabled: chewieController.zoomAndPan,
+            Transform.scale(
+              scale: 1.5,
               child: Center(
                 child: AspectRatio(
                   aspectRatio: chewieController.aspectRatio ??
